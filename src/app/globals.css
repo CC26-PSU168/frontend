@@ -1,0 +1,211 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ===== KampusCuan Design System ===== */
+@theme inline {
+  /* Shadcn vars */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Inter", sans-serif;
+  --font-mono: var(--font-geist-mono);
+  --font-heading: "Inter", sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* KampusCuan custom colors */
+  --color-lime: #BCFF4F;
+  --color-lime-dim: #99D929;
+  --color-surface: #0A0A0A;
+  --color-surface-card: #141414;
+  --color-surface-hover: #1C1B1B;
+  --color-surface-variant: #353534;
+  --color-surface-high: #2A2A2A;
+  --color-text-primary: #F4F4F0;
+  --color-text-muted: #888888;
+  --color-danger: #FF4F4F;
+}
+
+/* Dark mode forced — Neon Brutalist is always dark */
+:root {
+  --background: #0A0A0A;
+  --foreground: #F4F4F0;
+  --card: #141414;
+  --card-foreground: #F4F4F0;
+  --popover: #141414;
+  --popover-foreground: #F4F4F0;
+  --primary: #BCFF4F;
+  --primary-foreground: #0A0A0A;
+  --secondary: #2A2A2A;
+  --secondary-foreground: #F4F4F0;
+  --muted: #1C1B1B;
+  --muted-foreground: #888888;
+  --accent: #1C1B1B;
+  --accent-foreground: #F4F4F0;
+  --destructive: #FF4F4F;
+  --border: rgba(188, 255, 79, 0.1);
+  --input: #1C1B1B;
+  --ring: #BCFF4F;
+  --chart-1: #BCFF4F;
+  --chart-2: #99D929;
+  --chart-3: #888888;
+  --chart-4: #353534;
+  --chart-5: #2A2A2A;
+  --radius: 1rem;
+  --sidebar: #0A0A0A;
+  --sidebar-foreground: #F4F4F0;
+  --sidebar-primary: #BCFF4F;
+  --sidebar-primary-foreground: #0A0A0A;
+  --sidebar-accent: #141414;
+  --sidebar-accent-foreground: #BCFF4F;
+  --sidebar-border: rgba(188, 255, 79, 0.1);
+  --sidebar-ring: #BCFF4F;
+}
+
+.dark {
+  --background: #0A0A0A;
+  --foreground: #F4F4F0;
+  --card: #141414;
+  --card-foreground: #F4F4F0;
+  --popover: #141414;
+  --popover-foreground: #F4F4F0;
+  --primary: #BCFF4F;
+  --primary-foreground: #0A0A0A;
+  --secondary: #2A2A2A;
+  --secondary-foreground: #F4F4F0;
+  --muted: #1C1B1B;
+  --muted-foreground: #888888;
+  --accent: #1C1B1B;
+  --accent-foreground: #F4F4F0;
+  --destructive: #FF4F4F;
+  --border: rgba(188, 255, 79, 0.1);
+  --input: #1C1B1B;
+  --ring: #BCFF4F;
+  --chart-1: #BCFF4F;
+  --chart-2: #99D929;
+  --chart-3: #888888;
+  --chart-4: #353534;
+  --chart-5: #2A2A2A;
+  --sidebar: #0A0A0A;
+  --sidebar-foreground: #F4F4F0;
+  --sidebar-primary: #BCFF4F;
+  --sidebar-primary-foreground: #0A0A0A;
+  --sidebar-accent: #141414;
+  --sidebar-accent-foreground: #BCFF4F;
+  --sidebar-border: rgba(188, 255, 79, 0.1);
+  --sidebar-ring: #BCFF4F;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: "Inter", sans-serif;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* ===== KampusCuan Custom Utilities ===== */
+
+/* Inter Black — Display Text */
+.inter-black {
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+/* Gear animation for background */
+@keyframes gear-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-gear {
+  animation: gear-rotate 20s linear infinite;
+}
+
+.animate-gear-reverse {
+  animation: gear-rotate 25s linear infinite reverse;
+}
+
+/* Neon glow effect */
+.glow-lime {
+  box-shadow: 0 0 30px rgba(188, 255, 79, 0.2);
+}
+
+.glow-lime-strong {
+  box-shadow: 0 0 50px rgba(188, 255, 79, 0.3);
+}
+
+/* Custom scrollbar */
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 10px;
+}
+
+/* Selection color */
+::selection {
+  background-color: #BCFF4F;
+  color: #0A0A0A;
+}
+
+/* Marquee animation for landing page */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
