@@ -51,11 +51,11 @@ export default function Sidebar() {
       </nav>
 
       {/* Upgrade Button */}
-      <div className="px-6 mb-8">
+      {/* <div className="px-6 mb-8">
         <button className="w-full bg-[#BCFF4F] text-[#0A0A0A] font-bold py-4 rounded-full active:scale-95 transition-transform duration-200">
           Upgrade to Pro
         </button>
-      </div>
+      </div> */}
 
       {/* Bottom Links */}
       <div className="border-t border-[#BCFF4F]/5 pt-4">

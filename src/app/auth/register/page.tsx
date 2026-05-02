@@ -54,8 +54,13 @@ export default function RegisterPage() {
       setUser(user);
 
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Terjadi kesalahan saat mendaftar');
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        const err = error as { response?: { data?: { message?: string } } };
+        setError(err.response?.data?.message || 'Registrasi gagal. Silakan coba lagi.');
+      } else {
+        setError('Registrasi gagal. Silakan coba lagi.');
+      }
     } finally {
       setIsLoading(false);
     }
