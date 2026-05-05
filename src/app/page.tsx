@@ -2,7 +2,7 @@ import Link from 'next/link';
 import LandingNavbar from '@/components/layout/LandingNavbar';
 
 export const metadata = {
-  title: 'KampusCuan — Manajemen Keuangan Mahasiswa Indonesia',
+  title: 'Budgetly — Manajemen Keuangan Mahasiswa Indonesia',
   description:
     'Platform manajemen keuangan pribadi untuk mahasiswa Indonesia. AI-powered insights, budget tracking, dan split bill.',
 };
@@ -219,7 +219,7 @@ export default function LandingPage() {
           <div className="bg-[#2A2A2A] border-l-8 border-[#BCFF4F] p-12 max-w-md sticky top-32 md:w-1/2 border border-[#BCFF4F]/15 rounded-r-xl">
             <span className="material-symbols-outlined text-[#BCFF4F] text-5xl mb-6" style={{ fontVariationSettings: "'FILL' 1" }}>format_quote</span>
             <p className="text-2xl font-bold leading-relaxed text-[#F4F4F0] mb-8">
-              &ldquo;Dulu saldo selalu habis di tengah bulan. Sejak pake KampusCuan, gue jadi tau borosnya di mana dan sekarang malah bisa nabung buat beli laptop baru.&rdquo;
+              &ldquo;Dulu saldo selalu habis di tengah bulan. Sejak pake Budgetly, gue jadi tau borosnya di mana dan sekarang malah bisa nabung buat beli laptop baru.&rdquo;
             </p>
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-[#3A3939] flex items-center justify-center font-[900]">AD</div>
@@ -240,7 +240,7 @@ export default function LandingPage() {
                 {/* Phone mockup placeholder */}
                 <div className="rounded-[2.5rem] w-full aspect-[9/16] bg-gradient-to-b from-[#1A1A1A] to-[#0A0A0A] flex flex-col items-center justify-center gap-6 p-8">
                   <span className="material-symbols-outlined text-[#BCFF4F] text-6xl">account_balance_wallet</span>
-                  <span className="text-[#BCFF4F] font-[900] text-2xl tracking-tighter">KampusCuan</span>
+                  <span className="text-[#BCFF4F] font-[900] text-2xl tracking-tighter">Budgetly</span>
                   <div className="w-full space-y-3">
                     <div className="bg-[#2A2A2A] h-3 rounded-full w-full" />
                     <div className="bg-[#BCFF4F] h-3 rounded-full w-3/4" />
@@ -353,7 +353,7 @@ export default function LandingPage() {
         <div className="flex flex-col items-center gap-8 w-full px-8">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-[#BCFF4F]">account_balance_wallet</span>
-            <span className="text-xl font-[900] tracking-tighter text-[#F4F4F0]">KampusCuan.</span>
+            <span className="text-xl font-[900] tracking-tighter text-[#F4F4F0]">Budgetly.</span>
           </div>
           <div className="flex flex-wrap justify-center gap-8 md:gap-16">
             <a className="text-[#888888] font-medium hover:text-[#BCFF4F] hover:scale-110 transition-all" href="#features">Fitur</a>
@@ -363,7 +363,7 @@ export default function LandingPage() {
           </div>
           <div className="w-full h-[1px] bg-[#BCFF4F]/10 max-w-7xl" />
           <div className="flex flex-col md:flex-row justify-between items-center w-full max-w-7xl gap-4">
-            <p className="text-[#888888] text-sm">© 2024 KampusCuan. Smart Finance for Students.</p>
+            <p className="text-[#888888] text-sm">© 2024 Budgetly. Smart Finance for Students.</p>
             <div className="flex gap-6">
               <span className="material-symbols-outlined text-[#888888] hover:text-[#BCFF4F] transition-colors cursor-pointer">share</span>
               <span className="material-symbols-outlined text-[#888888] hover:text-[#BCFF4F] transition-colors cursor-pointer">language</span>

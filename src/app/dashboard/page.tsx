@@ -6,7 +6,8 @@ import SpendingTrendChart from '@/components/dashboard/SpendingTrendChart';
 import RecentTransactions from '@/components/dashboard/RecentTransactions';
 import BudgetOverview from '@/components/dashboard/BudgetOverview';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useTransactionSummary, useMonthlyTrend, useCategoryBreakdown } from '@/hooks/useTransactions';
+import { useTransactionSummary, useMonthlyTrend } from '@/hooks/useTransactions';
+import { useSavingsGoals } from '@/hooks/useSavings';
 import { useAuthStore } from '@/store/authStore';
 import { formatCompact } from '@/lib/formatters';
 
@@ -14,6 +15,7 @@ export default function DashboardPage() {
   const { user } = useAuthStore();
   const { data: summary, isLoading: summaryLoading } = useTransactionSummary();
   const { data: trend, isLoading: trendLoading } = useMonthlyTrend(6);
+  const { data: savingsGoals, isLoading: savingsLoading } = useSavingsGoals();
 
   const firstName = user?.name?.split(' ')[0] || 'Sobat Cuan';
   const now = new Date();
@@ -73,19 +75,42 @@ export default function DashboardPage() {
         {/* Savings Card — 3 col */}
         <div className="col-span-12 lg:col-span-3 bg-[#1C1B1B] p-8 rounded-xl flex flex-col justify-between min-h-[320px] relative overflow-hidden">
           <div className="absolute -right-8 -top-8 w-32 h-32 bg-[#BCFF4F]/5 blur-3xl rounded-full" />
+          
           <div className="z-10">
             <span className="font-black tracking-widest uppercase text-xs text-[#888888]">Target Tabungan</span>
-            <div className="text-4xl font-[900] tracking-[-0.04em] mt-4">Rp 12.0M</div>
-            <div className="text-xs font-bold text-[#BCFF4F] mt-2 uppercase tracking-widest">Macbook Pro M3</div>
+            {savingsLoading ? (
+               <Skeleton className="h-10 w-[150px] bg-[#2A2A2A] mt-4 mb-2" />
+            ) : savingsGoals && savingsGoals.length > 0 ? (
+              <>
+                <div className="text-4xl font-[900] tracking-[-0.04em] mt-4">{formatCompact(savingsGoals[0].targetAmount)}</div>
+                <div className="text-xs font-bold text-[#BCFF4F] mt-2 uppercase tracking-widest truncate">{savingsGoals[0].name}</div>
+              </>
+            ) : (
+              <div className="text-sm font-bold text-[#888888] mt-4">Belum ada target tabungan</div>
+            )}
           </div>
+          
           <div className="z-10">
-            <div className="flex justify-between text-[10px] font-black mb-2 uppercase text-[#888888]">
-              <span>Progress</span>
-              <span>45%</span>
-            </div>
-            <div className="w-full bg-[#0A0A0A] h-1.5 rounded-full">
-              <div className="bg-[#BCFF4F] h-full w-[45%] rounded-full shadow-[0_0_15px_rgba(188,255,79,0.3)]" />
-            </div>
+            {savingsGoals && savingsGoals.length > 0 ? (
+              <>
+                <div className="flex justify-between text-[10px] font-black mb-2 uppercase text-[#888888]">
+                  <span>Progress</span>
+                  <span>{savingsGoals[0].percentage}%</span>
+                </div>
+                <div className="w-full bg-[#0A0A0A] h-1.5 rounded-full">
+                  <div 
+                    className="bg-[#BCFF4F] h-full rounded-full shadow-[0_0_15px_rgba(188,255,79,0.3)] transition-all duration-1000" 
+                    style={{ width: `${Math.min(savingsGoals[0].percentage, 100)}%` }} 
+                  />
+                </div>
+              </>
+            ) : (
+              <Link href="/savings">
+                <button className="bg-white/5 hover:bg-white/10 text-white font-bold text-xs px-4 py-2 rounded-full w-full transition-colors uppercase tracking-widest">
+                  Buat Target
+                </button>
+              </Link>
+            )}
           </div>
         </div>
 

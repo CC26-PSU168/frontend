@@ -12,8 +12,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'KampusCuan — Manajemen Keuangan Mahasiswa',
-    template: '%s | KampusCuan',
+    default: 'Budgetly — Manajemen Keuangan Mahasiswa',
+    template: '%s | Budgetly',
   },
   description:
     'Platform manajemen keuangan pribadi untuk mahasiswa Indonesia. Catat pengeluaran, atur budget, dan dapatkan insight AI untuk keuangan lebih cerdas.',

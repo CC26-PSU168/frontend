@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#BCFF4F]/5 rounded-full blur-[100px]" />
         </div>
         <div className="relative z-10 text-center px-16">
-          <h1 className="text-6xl font-[900] tracking-[-0.04em] text-[#BCFF4F] mb-4">KAMPUSCUAN</h1>
+          <h1 className="text-6xl font-[900] tracking-[-0.04em] text-[#BCFF4F] mb-4">Budgetly</h1>
           <p className="text-[#888888] text-lg font-medium">
             Jangan khawatir.<br />
             Kami bantu reset password kamu.
@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
       <div className="w-full lg:w-1/2 bg-[#0A0A0A] flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="lg:hidden mb-12 text-center">
-            <h1 className="text-3xl font-[900] tracking-[-0.04em] text-[#BCFF4F]">KAMPUSCUAN</h1>
+            <h1 className="text-3xl font-[900] tracking-[-0.04em] text-[#BCFF4F]">Budgetly</h1>
           </div>
 
           {!isSubmitted ? (

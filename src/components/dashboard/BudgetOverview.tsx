@@ -2,17 +2,12 @@
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCompact } from '@/lib/formatters';
-import { useCategoryBreakdown } from '@/hooks/useTransactions';
-
-// Hardcoded budgets (dynamic in Phase 3)
-const DEMO_BUDGETS = [
-  { category: 'Makanan & Minuman', limitAmount: 1500000 },
-  { category: 'Transportasi', limitAmount: 400000 },
-  { category: 'Hiburan & Lifestyle', limitAmount: 400000 },
-];
+import { useBudgetOverview } from '@/hooks/useBudgets';
+import Link from 'next/link';
 
 export default function BudgetOverview() {
-  const { data: categories, isLoading } = useCategoryBreakdown();
+  const now = new Date();
+  const { data: overview, isLoading } = useBudgetOverview(now.getMonth() + 1, now.getFullYear());
 
   if (isLoading) {
     return (
@@ -28,37 +23,48 @@ export default function BudgetOverview() {
     );
   }
 
+  const budgets = overview?.categories || [];
+
   return (
-    <div className="bg-[#F4F4F0] p-8 rounded-xl flex flex-col justify-between">
+    <div className="bg-[#F4F4F0] p-8 rounded-xl flex flex-col justify-between h-full">
       <div className="flex justify-between items-center mb-6">
         <h3 className="font-black tracking-widest uppercase text-sm text-[#0A0A0A]">Budget Limits</h3>
-        <button className="bg-[#0A0A0A] text-[#F4F4F0] rounded-full p-2 flex items-center justify-center hover:bg-[#1C1C1C] transition-colors">
-          <span className="material-symbols-outlined text-xs">add</span>
-        </button>
+        <Link href="/budgeting">
+          <button className="bg-[#0A0A0A] text-[#F4F4F0] rounded-full p-2 flex items-center justify-center hover:bg-[#1C1C1C] transition-colors">
+            <span className="material-symbols-outlined text-xs">arrow_forward</span>
+          </button>
+        </Link>
       </div>
-      <div className="space-y-6">
-        {DEMO_BUDGETS.map((budget) => {
-          const spent = categories?.find((c) => c.category === budget.category)?.amount || 0;
-          const pct = Math.min(Math.round((spent / budget.limitAmount) * 100), 100);
-          const isOver = spent > budget.limitAmount;
+      <div className="space-y-6 flex-1">
+        {budgets.length > 0 ? (
+          budgets.slice(0, 4).map((budget) => {
+            const spent = budget.spent;
+            const pct = Math.min(budget.percentage, 100);
+            const isOver = budget.percentage >= 100;
 
-          return (
-            <div key={budget.category}>
-              <div className="flex justify-between text-[10px] font-black uppercase text-[#0A0A0A]/40 mb-2">
-                <span>{budget.category}</span>
-                <span className={isOver ? 'text-red-500' : 'text-[#0A0A0A]'}>
-                  {formatCompact(spent)} / {formatCompact(budget.limitAmount)}
-                </span>
+            return (
+              <div key={budget.id}>
+                <div className="flex justify-between text-[10px] font-black uppercase text-[#0A0A0A]/40 mb-2">
+                  <span>{budget.category}</span>
+                  <span className={isOver ? 'text-red-500' : 'text-[#0A0A0A]'}>
+                    {formatCompact(spent)} / {formatCompact(budget.limitAmount)}
+                  </span>
+                </div>
+                <div className="w-full bg-black/10 h-3 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-1000 rounded-full ${isOver ? 'bg-red-500' : 'bg-[#0A0A0A]'}`}
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
               </div>
-              <div className="w-full bg-black/10 h-3 rounded-full overflow-hidden">
-                <div
-                  className={`h-full transition-all duration-1000 rounded-full ${isOver ? 'bg-red-500' : 'bg-[#0A0A0A]'}`}
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-            </div>
-          );
-        })}
+            );
+          })
+        ) : (
+          <div className="flex flex-col items-center justify-center h-full opacity-50">
+            <span className="material-symbols-outlined text-4xl mb-2 text-[#0A0A0A]/30">account_balance_wallet</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-[#0A0A0A]/50">Belum ada budget</span>
+          </div>
+        )}
       </div>
     </div>
   );

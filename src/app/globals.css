@@ -4,7 +4,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ===== KampusCuan Design System ===== */
+/* ===== Budgetly Design System ===== */
 @theme inline {
   /* Shadcn vars */
   --color-background: var(--background);
@@ -49,7 +49,7 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* KampusCuan custom colors */
+  /* Budgetly custom colors */
   --color-lime: #BCFF4F;
   --color-lime-dim: #99D929;
   --color-surface: #0A0A0A;
@@ -145,7 +145,7 @@
   }
 }
 
-/* ===== KampusCuan Custom Utilities ===== */
+/* ===== Budgetly Custom Utilities ===== */
 
 /* Inter Black — Display Text */
 .inter-black {

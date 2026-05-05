@@ -50,6 +50,6 @@ export const HEALTH_SCORE_LABELS = {
 } as const;
 
 // ===== App Info =====
-export const APP_NAME = 'KAMPUSCUAN';
+export const APP_NAME = 'Budgetly';
 export const APP_TAGLINE = 'Fintech for Students';
 export const APP_VERSION = 'v1.0.0';

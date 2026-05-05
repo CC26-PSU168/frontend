@@ -6,7 +6,7 @@ export default function LandingNavbar() {
       <nav className="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-[#BCFF4F]">account_balance_wallet</span>
-          <span className="text-2xl font-[900] tracking-tighter text-[#F4F4F0]">KampusCuan.</span>
+          <span className="text-2xl font-[900] tracking-tighter text-[#F4F4F0]">Budgetly.</span>
         </div>
         <div className="hidden md:flex gap-8 items-center">
           <a className="text-[#BCFF4F] font-bold border-b-2 border-[#BCFF4F] pb-1 uppercase text-xs tracking-widest" href="#features">Fitur</a>

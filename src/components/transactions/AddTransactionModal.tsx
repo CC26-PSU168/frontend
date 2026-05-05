@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -18,6 +18,8 @@ interface AddTransactionModalProps {
   onSubmit: (data: TransactionFormData) => void;
   isLoading: boolean;
   editData?: Transaction | null;
+  onDelete?: (id: string) => void;
+  isDeleting?: boolean;
 }
 
 export default function AddTransactionModal({
@@ -26,7 +28,10 @@ export default function AddTransactionModal({
   onSubmit,
   isLoading,
   editData,
+  onDelete,
+  isDeleting,
 }: AddTransactionModalProps) {
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const {
     register,
     handleSubmit,
@@ -72,18 +77,51 @@ export default function AddTransactionModal({
         description: '',
         notes: '',
       });
+      setShowConfirmDelete(false);
     }
   }, [editData, open, reset]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-[#141414] border border-[#BCFF4F]/15 text-[#F4F4F0] w-full max-w-[480px] rounded-[20px] p-0 shadow-2xl max-h-[90dvh] !grid-rows-none !flex !flex-col">
-        {/* Header (sticky) */}
-        <div className="flex justify-between items-center px-6 pt-6 pb-4 shrink-0">
-          <h3 className="text-2xl font-[900] tracking-[-0.04em] text-[#F4F4F0]">
-            {editData ? 'Edit Transaksi' : 'Input Transaksi'}<span className="text-[#BCFF4F]">.</span>
-          </h3>
-        </div>
+        {showConfirmDelete ? (
+          <div className="flex flex-col items-center justify-center p-10 text-center h-full">
+            <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mb-6">
+              <span className="material-symbols-outlined text-4xl text-red-500">warning</span>
+            </div>
+            <h3 className="text-2xl font-[900] tracking-[-0.04em] text-white mb-3">Hapus Transaksi?</h3>
+            <p className="text-[#888888] font-bold text-sm mb-8">
+              Data akan dihapus permanen dan dana akan dikembalikan ke saldo utama Anda.
+            </p>
+            <div className="flex gap-4 w-full">
+              <Button
+                type="button"
+                onClick={() => setShowConfirmDelete(false)}
+                disabled={isDeleting}
+                className="flex-1 border border-white/10 text-white font-[900] py-4 rounded-full hover:bg-white/5 transition-all h-auto"
+              >
+                BATAL
+              </Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  if (editData && onDelete) onDelete(editData.id);
+                }}
+                disabled={isDeleting}
+                className="flex-1 bg-red-500 text-white font-[900] py-4 rounded-full hover:bg-red-600 transition-all h-auto disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isDeleting ? 'MENGHAPUS...' : 'HAPUS DATA'}
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Header (sticky) */}
+            <div className="flex justify-between items-center px-6 pt-6 pb-4 shrink-0">
+              <h3 className="text-2xl font-[900] tracking-[-0.04em] text-[#F4F4F0]">
+                {editData ? 'Edit Transaksi' : 'Input Transaksi'}<span className="text-[#BCFF4F]">.</span>
+              </h3>
+            </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 overflow-y-auto px-6 pb-6 flex-1 min-h-0">
           {/* TIPE TRANSAKSI */}
@@ -221,17 +259,30 @@ export default function AddTransactionModal({
           </div>
 
           {/* SUBMIT */}
-          <div className="mt-4">
+          <div className="mt-4 flex gap-4">
+            {editData && onDelete && (
+              <Button
+                type="button"
+                onClick={() => setShowConfirmDelete(true)}
+                disabled={isDeleting || isLoading}
+                className="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white font-[900] py-5 px-6 rounded-full transition-all h-auto disabled:opacity-50"
+                title="Hapus Transaksi"
+              >
+                <span className="material-symbols-outlined">delete</span>
+              </Button>
+            )}
             <Button
               type="submit"
-              disabled={isLoading}
-              className="w-full bg-[#BCFF4F] text-[#0A0A0A] font-[900] text-lg py-5 rounded-full hover:scale-[0.98] active:scale-[0.95] transition-all flex items-center justify-center gap-3 h-auto"
+              disabled={isLoading || isDeleting}
+              className="flex-1 bg-[#BCFF4F] text-[#0A0A0A] font-[900] text-lg py-5 rounded-full hover:scale-[0.98] active:scale-[0.95] transition-all flex items-center justify-center gap-3 h-auto disabled:opacity-50"
             >
               {isLoading ? 'Menyimpan...' : editData ? 'SIMPAN PERUBAHAN' : 'SIMPAN TRANSAKSI'}
               <span className="material-symbols-outlined font-black">arrow_forward</span>
             </Button>
           </div>
         </form>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

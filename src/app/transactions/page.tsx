@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import TransactionFilter from '@/components/transactions/TransactionFilter';
 import TransactionList from '@/components/transactions/TransactionList';
 import AddTransactionModal from '@/components/transactions/AddTransactionModal';
-import { useTransactions, useTransactionSummary, useCreateTransaction, useUpdateTransaction } from '@/hooks/useTransactions';
+import { useTransactions, useTransactionSummary, useCreateTransaction, useUpdateTransaction, useDeleteTransaction } from '@/hooks/useTransactions';
 import { formatIDR } from '@/lib/formatters';
 import { toast } from 'sonner';
 import type { Transaction, TransactionFilters } from '@/types/transaction';
@@ -29,6 +29,7 @@ export default function TransactionsPage() {
   const { data: summary } = useTransactionSummary(filters.month, filters.year);
   const createMutation = useCreateTransaction();
   const updateMutation = useUpdateTransaction();
+  const deleteMutation = useDeleteTransaction();
 
   const handleFilterChange = useCallback((partial: Partial<TransactionFilters>) => {
     setFilters((prev) => ({ ...prev, ...partial }));
@@ -44,7 +45,6 @@ export default function TransactionsPage() {
     });
   };
 
-  const handleDelete = (_id: string) => { setEditingTx(null); setModalOpen(true); };
   const handleOpenCreate = () => { setEditingTx(null); setModalOpen(true); };
   const handleItemClick = (tx: Transaction) => { setEditingTx(tx); setModalOpen(true); };
 
@@ -59,8 +59,23 @@ export default function TransactionsPage() {
       }
       setModalOpen(false);
       setEditingTx(null);
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Gagal menyimpan transaksi');
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'response' in err) {
+        toast.error((err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Gagal menyimpan transaksi');
+      } else {
+        toast.error('Gagal menyimpan transaksi');
+      }
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteMutation.mutateAsync(id);
+      toast.success('Transaksi berhasil dihapus');
+      setModalOpen(false);
+      setEditingTx(null);
+    } catch {
+      toast.error('Gagal menghapus transaksi');
     }
   };
 
@@ -230,6 +245,8 @@ export default function TransactionsPage() {
         onSubmit={handleSubmit}
         isLoading={createMutation.isPending || updateMutation.isPending}
         editData={editingTx}
+        onDelete={handleDelete}
+        isDeleting={deleteMutation.isPending}
       />
     </AppLayout>
   );

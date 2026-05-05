@@ -81,7 +81,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="relative z-10 text-center px-16">
-          <h1 className="text-6xl font-[900] tracking-[-0.04em] text-[#BCFF4F] mb-4">KAMPUSCUAN</h1>
+          <h1 className="text-6xl font-[900] tracking-[-0.04em] text-[#BCFF4F] mb-4">Budgetly</h1>
           <p className="text-[#888888] text-lg font-medium mb-8">
             Mulai perjalanan finansialmu.<br />
             Gratis selamanya untuk mahasiswa.
@@ -102,7 +102,7 @@ export default function RegisterPage() {
       <div className="w-full lg:w-1/2 bg-[#0A0A0A] flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="lg:hidden mb-8 text-center">
-            <h1 className="text-3xl font-[900] tracking-[-0.04em] text-[#BCFF4F]">KAMPUSCUAN</h1>
+            <h1 className="text-3xl font-[900] tracking-[-0.04em] text-[#BCFF4F]">Budgetly</h1>
           </div>
 
           <div className="mb-8">

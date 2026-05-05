@@ -67,7 +67,7 @@ export default function LoginPage() {
 
         <div className="relative z-10 text-center px-16">
           <h1 className="text-6xl font-[900] tracking-[-0.04em] text-[#BCFF4F] mb-4">
-            KAMPUSCUAN
+            Budgetly
           </h1>
           <p className="text-[#888888] text-lg font-medium">
             Kelola keuanganmu dengan cerdas.<br />
@@ -95,7 +95,7 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
           <div className="lg:hidden mb-12 text-center">
-            <h1 className="text-3xl font-[900] tracking-[-0.04em] text-[#BCFF4F]">KAMPUSCUAN</h1>
+            <h1 className="text-3xl font-[900] tracking-[-0.04em] text-[#BCFF4F]">Budgetly</h1>
           </div>
 
           <div className="mb-10">
