@@ -63,3 +63,18 @@ export function useDeleteScheduledPayment() {
     },
   });
 }
+
+export function useMarkPaidScheduledPayment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await api.patch(`/scheduled-payments/${id}/mark-paid`);
+      return res.data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['scheduled-payments'] });
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['transaction-summary'] });
+    },
+  });
+}

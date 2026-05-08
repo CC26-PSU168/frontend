@@ -7,6 +7,15 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
 
+const NOTIF_ICON_MAP: Record<string, { icon: string; color: string }> = {
+  BUDGET_ALERT: { icon: 'warning', color: 'text-red-500' },
+  ANOMALY_DETECTED: { icon: 'troubleshoot', color: 'text-orange-500' },
+  BILL_REMINDER: { icon: 'event_upcoming', color: 'text-sky-400' },
+  SAVINGS_MILESTONE: { icon: 'emoji_events', color: 'text-yellow-400' },
+  WEEKLY_REPORT: { icon: 'summarize', color: 'text-purple-400' },
+  SYSTEM: { icon: 'info', color: 'text-[#BCFF4F]' },
+};
+
 export default function TopBar() {
   const { user } = useAuthStore();
   const { data: notifData } = useNotifications();
@@ -21,6 +30,11 @@ export default function TopBar() {
     if (!n.isRead) {
       markAsRead.mutate(n.id);
     }
+  };
+
+  const getNotifIcon = (type: string) => {
+    const mapping = NOTIF_ICON_MAP[type] || { icon: 'notifications', color: 'text-white' };
+    return <span className={`material-symbols-outlined ${mapping.color}`}>{mapping.icon}</span>;
   };
 
   return (
@@ -59,13 +73,20 @@ export default function TopBar() {
                 notifications
               </span>
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#BCFF4F] rounded-full border border-[#0A0A0A]" />
+                <span className="absolute -top-2.5 -right-3 min-w-[20px] h-5 bg-[#BCFF4F] rounded-full border-2 border-[#0A0A0A] flex items-center justify-center px-1">
+                  <span className="text-[10px] font-[900] text-black leading-none">{unreadCount > 9 ? '9+' : unreadCount}</span>
+                </span>
               )}
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[380px] bg-[#141414] border border-[#BCFF4F]/15 rounded-2xl p-0 shadow-2xl overflow-hidden mt-4">
             <div className="p-4 flex justify-between items-center bg-[#1A1A1A] border-b border-white/5">
-              <span className="font-[900] text-sm text-[#F4F4F0] tracking-widest uppercase">Notifikasi</span>
+              <div className="flex items-center gap-2">
+                <span className="font-[900] text-sm text-[#F4F4F0] tracking-widest uppercase">Notifikasi</span>
+                {unreadCount > 0 && (
+                  <span className="bg-[#BCFF4F] text-black text-[10px] font-[900] px-2 py-0.5 rounded-full">{unreadCount}</span>
+                )}
+              </div>
               {unreadCount > 0 && (
                 <button 
                   onClick={() => markAllAsRead.mutate()}
@@ -78,34 +99,32 @@ export default function TopBar() {
             
             <div className="max-h-[400px] overflow-y-auto">
               {notifications.length === 0 ? (
-                <div className="p-8 text-center text-[#888888] text-xs font-bold">
+                <div className="p-8 text-center text-[#888888] text-xs font-bold flex flex-col items-center gap-3">
+                  <span className="material-symbols-outlined text-3xl text-[#333]">notifications_off</span>
                   Belum ada notifikasi
                 </div>
               ) : (
                 notifications.map((n) => (
                   <div 
                     key={n.id} 
-                    className={`p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer flex gap-4 ${n.isRead ? 'opacity-60' : 'bg-[#BCFF4F]/5'}`}
+                    className={`group p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer flex gap-3 ${n.isRead ? 'opacity-50' : 'bg-[#BCFF4F]/5'}`}
                     onClick={() => handleNotificationClick(n)}
                   >
-                    <div className="mt-1">
-                      {n.type === 'BUDGET_ALERT' && <span className="material-symbols-outlined text-red-500">warning</span>}
-                      {n.type === 'ANOMALY_DETECTED' && <span className="material-symbols-outlined text-orange-500">troubleshoot</span>}
-                      {n.type === 'SYSTEM' && <span className="material-symbols-outlined text-[#BCFF4F]">info</span>}
-                      {n.type !== 'BUDGET_ALERT' && n.type !== 'ANOMALY_DETECTED' && n.type !== 'SYSTEM' && <span className="material-symbols-outlined text-white">notifications</span>}
+                    <div className="mt-0.5 shrink-0">
+                      {getNotifIcon(n.type)}
                     </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start mb-1">
-                        <h4 className={`text-sm font-bold ${!n.isRead ? 'text-[#F4F4F0]' : 'text-[#888888]'}`}>{n.title}</h4>
-                        <span className="text-[10px] text-[#888888] whitespace-nowrap ml-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start gap-2 mb-1">
+                        <h4 className={`text-sm font-bold truncate ${!n.isRead ? 'text-[#F4F4F0]' : 'text-[#888888]'}`}>{n.title}</h4>
+                        <span className="text-[10px] text-[#888888] whitespace-nowrap shrink-0">
                           {formatDistanceToNow(new Date(n.createdAt), { addSuffix: true, locale: id })}
                         </span>
                       </div>
-                      <p className="text-xs text-[#888888] leading-relaxed">{n.message}</p>
+                      <p className="text-xs text-[#888888] leading-relaxed line-clamp-2">{n.message}</p>
                     </div>
                     <button 
                       onClick={(e) => { e.stopPropagation(); deleteNotif.mutate(n.id); }}
-                      className="text-[#888888] hover:text-red-500 transition-colors shrink-0 opacity-0 group-hover:opacity-100"
+                      className="text-[#888888] hover:text-red-500 transition-colors shrink-0 opacity-0 group-hover:opacity-100 self-center"
                     >
                       <span className="material-symbols-outlined text-sm">close</span>
                     </button>

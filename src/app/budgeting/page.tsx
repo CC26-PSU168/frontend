@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { useBudgetOverview, useCreateBudget, useDeleteBudget } from '@/hooks/useBudgets';
-import { useScheduledPayments, useCreateScheduledPayment, useDeleteScheduledPayment } from '@/hooks/useScheduledPayments';
+import { useScheduledPayments, useCreateScheduledPayment, useDeleteScheduledPayment, useMarkPaidScheduledPayment } from '@/hooks/useScheduledPayments';
 import { formatIDR } from '@/lib/formatters';
 import { TRANSACTION_CATEGORIES } from '@/lib/constants';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -27,6 +27,7 @@ export default function BudgetingPage() {
   
   const createPaymentMutation = useCreateScheduledPayment();
   const deletePaymentMutation = useDeleteScheduledPayment();
+  const markPaidMutation = useMarkPaidScheduledPayment();
 
   // Add budget modal state
   const [newCategory, setNewCategory] = useState('');
@@ -93,6 +94,15 @@ export default function BudgetingPage() {
       toast.success('Tagihan berhasil dihapus');
     } catch {
       toast.error('Gagal menghapus tagihan');
+    }
+  };
+
+  const handleMarkPaid = async (id: string) => {
+    try {
+      await markPaidMutation.mutateAsync(id);
+      toast.success('Tagihan berhasil ditandai lunas! Transaksi pengeluaran otomatis tercatat.');
+    } catch {
+      toast.error('Gagal menandai tagihan lunas');
     }
   };
 
@@ -377,6 +387,13 @@ export default function BudgetingPage() {
                     </div>
                     <div className="text-[#BCFF4F] font-black">{formatIDR(p.amount)}</div>
                     <div className="text-[#888888] text-[10px] font-bold uppercase tracking-widest mt-2">Tiap Tgl {p.dueDay}</div>
+                    <button
+                      onClick={() => handleMarkPaid(p.id)}
+                      disabled={markPaidMutation.isPending}
+                      className="w-full mt-3 bg-[#BCFF4F]/10 text-[#BCFF4F] py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-[#BCFF4F] hover:text-[#0A0A0A] transition-all disabled:opacity-50"
+                    >
+                      ✓ Tandai Lunas
+                    </button>
                   </div>
                 ))}
               </div>

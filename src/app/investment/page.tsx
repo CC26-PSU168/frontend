@@ -1,5 +1,6 @@
 'use client';
 
+import AppLayout from '@/components/layout/AppLayout';
 import { useInvestmentPrices } from '@/hooks/useInvestment';
 import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -17,15 +18,16 @@ export default function InvestmentPage() {
   const { data: prices, isLoading, isError } = useInvestmentPrices();
 
   if (isLoading) {
-    return <div className="p-8 text-[#F4F4F0]">Loading data investasi...</div>;
+    return <AppLayout><div className="text-[#F4F4F0] animate-pulse">Memuat data investasi...</div></AppLayout>;
   }
 
   if (isError || !prices) {
-    return <div className="p-8 text-red-500">Gagal memuat data investasi. Coba lagi nanti.</div>;
+    return <AppLayout><div className="text-red-500 font-bold">Gagal memuat data investasi. Coba lagi nanti.</div></AppLayout>;
   }
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8">
+    <AppLayout>
+    <div className="max-w-5xl mx-auto space-y-8">
       <div>
         <h1 className="text-4xl font-[900] tracking-[-0.04em] text-[#F4F4F0]">
           Pantau Investasi<span className="text-[#BCFF4F]">.</span>
@@ -111,5 +113,6 @@ export default function InvestmentPage() {
         </div>
       </div>
     </div>
+    </AppLayout>
   );
 }

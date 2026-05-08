@@ -57,3 +57,12 @@ export function useUpdateNotifications() {
     },
   });
 }
+
+export function useDeleteAccount() {
+  return useMutation({
+    mutationFn: async (password?: string) => {
+      const { data } = await api.delete('/profile', { data: { password } });
+      return data;
+    },
+  });
+}
