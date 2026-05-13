@@ -126,13 +126,13 @@ export default function SplitBillPage() {
   return (
     <AppLayout>
       {/* Header */}
-      <div className="flex justify-between items-end mb-12">
-        <h2 className="text-6xl font-[900] tracking-[-0.04em] uppercase leading-none text-white">Split Bill.</h2>
-        <div className="flex items-center gap-4">
-          <div className="flex bg-[#141414] p-1 rounded-full">
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 mb-12">
+        <h2 className="text-4xl md:text-6xl font-[900] tracking-[-0.04em] uppercase leading-none text-white">Split Bill.</h2>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full xl:w-auto">
+          <div className="flex bg-[#141414] p-1 rounded-full overflow-x-auto w-full sm:w-auto shrink-0">
             <button
               onClick={() => setActiveTab('pending')}
-              className={`px-8 py-3 rounded-full font-bold transition-all ${
+              className={`flex-1 sm:flex-none px-8 py-3 rounded-full font-bold transition-all whitespace-nowrap ${
                 activeTab === 'pending' ? 'bg-[#2a2a2a] text-[#BCFF4F]' : 'text-[#888888] hover:text-white'
               }`}
             >
@@ -140,7 +140,7 @@ export default function SplitBillPage() {
             </button>
             <button
               onClick={() => setActiveTab('settled')}
-              className={`px-8 py-3 rounded-full font-bold transition-all ${
+              className={`flex-1 sm:flex-none px-8 py-3 rounded-full font-bold transition-all whitespace-nowrap ${
                 activeTab === 'settled' ? 'bg-[#2a2a2a] text-[#BCFF4F]' : 'text-[#888888] hover:text-white'
               }`}
             >
@@ -149,7 +149,7 @@ export default function SplitBillPage() {
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="bg-[#BCFF4F] text-[#0A0A0A] px-8 py-4 rounded-full font-[900] tracking-[-0.04em] flex items-center gap-2 transition-transform active:scale-95 shadow-[0_0_30px_rgba(188,255,79,0.2)]"
+            className="bg-[#BCFF4F] text-[#0A0A0A] px-8 py-3 md:py-4 h-auto whitespace-nowrap rounded-full font-[900] tracking-[-0.04em] flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-[0_0_30px_rgba(188,255,79,0.2)] w-full sm:w-auto"
           >
             Buat Split Bill <span className="material-symbols-outlined">add</span>
           </button>

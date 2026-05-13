@@ -57,10 +57,10 @@ export default function DashboardPage() {
       {/* Hero Greeting */}
       <div className="mb-12 flex justify-between items-end">
         <div>
-          <h1 className="text-6xl font-[900] tracking-[-0.04em] leading-none mb-2">
+          <h1 className="text-4xl md:text-6xl font-[900] tracking-[-0.04em] leading-none mb-2">
             Hei, {firstName}.
           </h1>
-          <p className="text-[#888888] font-bold tracking-widest uppercase text-sm">
+          <p className="text-[#888888] font-bold tracking-widest uppercase text-xs md:text-sm">
             Welcome back to the terminal.
           </p>
         </div>
@@ -84,7 +84,7 @@ export default function DashboardPage() {
             {summaryLoading ? (
               <Skeleton className="h-16 w-[260px] bg-[#0A0A0A]/10" />
             ) : (
-              <div className="text-7xl font-[900] tracking-[-0.04em] text-[#0A0A0A]">
+              <div className="text-5xl md:text-7xl font-[900] tracking-[-0.04em] text-[#0A0A0A] truncate">
                 {summary ? new Intl.NumberFormat('id-ID').format(summary.balance) : '0'}
               </div>
             )}
@@ -271,7 +271,7 @@ export default function DashboardPage() {
               <Skeleton className="h-40 w-40 rounded-full bg-[#2A2A2A]" />
             </div>
           ) : categoryData && categoryData.length > 0 ? (
-            <div className="flex items-center gap-8">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8">
               {/* SVG Donut */}
               <div className="relative w-40 h-40 shrink-0">
                 <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
@@ -304,7 +304,7 @@ export default function DashboardPage() {
                 </div>
               </div>
               {/* Legend */}
-              <div className="flex-1 space-y-2">
+              <div className="flex-1 space-y-2 w-full">
                 {categoryData.slice(0, 6).map((cat, i) => (
                   <div key={cat.category} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">

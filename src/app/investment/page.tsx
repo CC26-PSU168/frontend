@@ -101,7 +101,7 @@ export default function InvestmentPage() {
       </div>
 
       {/* Edukasi */}
-      <div className="bg-[#BCFF4F]/10 border border-[#BCFF4F]/20 rounded-[24px] p-8 flex gap-6 mt-12">
+      <div className="bg-[#BCFF4F]/10 border border-[#BCFF4F]/20 rounded-[24px] p-6 md:p-8 flex flex-col md:flex-row gap-6 mt-12">
         <div className="w-16 h-16 bg-[#BCFF4F] rounded-2xl flex items-center justify-center shrink-0">
           <span className="material-symbols-outlined text-black text-3xl font-black">school</span>
         </div>

@@ -6,6 +6,7 @@ import { useNotifications, useMarkNotificationAsRead, useMarkAllNotificationsAsR
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
+import { useUIStore } from '@/store/uiStore';
 
 const NOTIF_ICON_MAP: Record<string, { icon: string; color: string }> = {
   BUDGET_ALERT: { icon: 'warning', color: 'text-red-500' },
@@ -22,6 +23,7 @@ export default function TopBar() {
   const markAsRead = useMarkNotificationAsRead();
   const markAllAsRead = useMarkAllNotificationsAsRead();
   const deleteNotif = useDeleteNotification();
+  const { toggleMobileMenu, toggleDesktopSidebar, isDesktopSidebarOpen } = useUIStore();
 
   const notifications = notifData?.notifications || [];
   const unreadCount = notifData?.unreadCount || 0;
@@ -38,9 +40,25 @@ export default function TopBar() {
   };
 
   return (
-    <header className="flex justify-between items-center h-20 px-8 sticky top-0 bg-[#0A0A0A]/70 backdrop-blur-3xl z-40">
+    <header className="flex justify-between items-center h-20 px-4 md:px-8 sticky top-0 bg-[#0A0A0A]/70 backdrop-blur-3xl z-40 gap-4">
+      {/* Mobile Menu Button */}
+      <button 
+        onClick={toggleMobileMenu}
+        className="lg:hidden p-2 text-[#F4F4F0] hover:text-[#BCFF4F] transition-colors"
+      >
+        <span className="material-symbols-outlined">menu</span>
+      </button>
+
+      {/* Desktop Menu Button */}
+      <button 
+        onClick={toggleDesktopSidebar}
+        className="hidden lg:block p-2 text-[#F4F4F0] hover:text-[#BCFF4F] transition-colors mr-2"
+      >
+        <span className="material-symbols-outlined">{isDesktopSidebarOpen ? 'menu_open' : 'menu'}</span>
+      </button>
+
       {/* Search Bar */}
-      <div className="flex items-center gap-4 bg-[#141414] px-6 py-2 rounded-full border border-white/5">
+      <div className="hidden md:flex items-center gap-4 bg-[#141414] px-6 py-2 rounded-full border border-white/5 flex-1 max-w-md">
         <span className="material-symbols-outlined text-[#888888]">search</span>
         <input
           className="bg-transparent border-none focus:ring-0 focus:outline-none text-sm font-bold text-[#F4F4F0] w-64 placeholder:text-[#888888]"
@@ -50,19 +68,19 @@ export default function TopBar() {
       </div>
 
       {/* Right side */}
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-3 md:gap-6 ml-auto">
         <Link
           href="#"
-          className="text-[#F4F4F0] hover:text-[#BCFF4F] transition-all font-bold text-sm uppercase tracking-widest"
+          className="hidden md:block text-[#F4F4F0] hover:text-[#BCFF4F] transition-all font-bold text-sm uppercase tracking-widest"
         >
           Support
         </Link>
 
-        <div className="h-8 w-[1px] bg-white/10" />
+        <div className="hidden md:block h-8 w-[1px] bg-white/10" />
 
-        <button className="flex items-center gap-2 bg-[#BCFF4F] text-[#0A0A0A] px-6 py-2 rounded-full font-bold text-sm active:scale-95 transition-transform">
+        <button className="hidden sm:flex items-center gap-2 bg-[#BCFF4F] text-[#0A0A0A] px-4 md:px-6 py-2 rounded-full font-bold text-sm active:scale-95 transition-transform">
           <span className="material-symbols-outlined text-sm">add</span>
-          Add Funds
+          <span className="hidden md:inline">Add Funds</span>
         </button>
 
         {/* Notifications */}

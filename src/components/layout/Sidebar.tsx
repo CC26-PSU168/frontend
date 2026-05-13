@@ -3,12 +3,18 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { NAV_ITEMS, APP_NAME, APP_TAGLINE } from '@/lib/constants';
+import { useUIStore } from '@/store/uiStore';
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { isMobileMenuOpen, closeMobileMenu, isDesktopSidebarOpen } = useUIStore();
 
   return (
-    <aside className="h-screen w-72 fixed left-0 top-0 border-r border-[#BCFF4F]/10 bg-[#0A0A0A] flex flex-col py-8 z-50">
+    <aside className={`
+      h-screen w-72 fixed left-0 top-0 border-r border-[#BCFF4F]/10 bg-[#0A0A0A] flex flex-col py-8 z-50 transition-transform duration-300
+      ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+      ${isDesktopSidebarOpen ? 'lg:translate-x-0' : 'lg:-translate-x-full'}
+    `}>
       {/* Logo */}
       <div className="px-8 mb-12">
         <Link href="/dashboard">
@@ -37,6 +43,7 @@ export default function Sidebar() {
                   : 'text-[#888888] hover:bg-[#1C1B1B] hover:text-[#F4F4F0]'
                 }
               `}
+              onClick={closeMobileMenu}
             >
               <span
                 className="material-symbols-outlined"
@@ -61,6 +68,7 @@ export default function Sidebar() {
       <div className="border-t border-[#BCFF4F]/5 pt-4">
         <Link
           href="/profile"
+          onClick={closeMobileMenu}
           className={`px-6 py-4 flex items-center gap-4 transition-colors ${
             pathname === '/profile'
               ? 'text-[#BCFF4F] font-bold border-l-4 border-[#BCFF4F] bg-[#141414]'

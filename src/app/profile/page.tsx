@@ -115,7 +115,7 @@ export default function ProfilePage() {
       </div>
 
       {/* ===== Header Profil ===== */}
-      <div className="bg-[#141414] border border-white/5 rounded-[24px] p-8 shadow-2xl flex items-center gap-6">
+      <div className="bg-[#141414] border border-white/5 rounded-[24px] p-6 md:p-8 shadow-2xl flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
         {/* Avatar */}
         <div className="w-20 h-20 rounded-full border-3 border-[#BCFF4F] bg-[#2A2A2A] flex items-center justify-center shrink-0 overflow-hidden">
           {profile.avatarUrl ? (
@@ -131,7 +131,7 @@ export default function ProfilePage() {
           <h2 className="text-2xl font-[900] tracking-tight text-[#F4F4F0] truncate">{profile.name}</h2>
           <p className="text-[#888888] font-bold text-sm truncate">{profile.email}</p>
           {profile.university && (
-            <p className="text-[#888888] text-xs mt-1 flex items-center gap-1">
+            <p className="text-[#888888] text-xs mt-1 flex items-center justify-center sm:justify-start gap-1">
               <span className="material-symbols-outlined text-xs">school</span>
               {profile.university}
             </p>

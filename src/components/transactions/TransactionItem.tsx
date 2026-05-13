@@ -16,10 +16,10 @@ export default function TransactionItem({ transaction, onClick }: TransactionIte
 
   return (
     <div
-      className="bg-[#141414] border border-[#BCFF4F]/10 p-5 rounded-lg flex items-center justify-between hover:bg-[#1c1c1c] transition-colors cursor-pointer group"
+      className="bg-[#141414] border border-[#BCFF4F]/10 p-4 sm:p-5 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between hover:bg-[#1c1c1c] transition-colors cursor-pointer group gap-4 sm:gap-0"
       onClick={() => onClick(transaction)}
     >
-      <div className="flex items-center gap-5">
+      <div className="flex items-start sm:items-center gap-4 sm:gap-5 w-full sm:w-auto">
         {/* Category Icon Circle */}
         <div className="w-12 h-12 bg-[#0A0A0A] rounded-full flex items-center justify-center border border-white/5 text-[#BCFF4F] group-hover:border-[#BCFF4F]/40 transition-colors">
           <span className="material-symbols-outlined">
@@ -47,7 +47,7 @@ export default function TransactionItem({ transaction, onClick }: TransactionIte
           </div>
         </div>
       </div>
-      <div className="text-right">
+      <div className="text-left sm:text-right pl-16 sm:pl-0 w-full sm:w-auto">
         <p className={`font-black text-xl ${isExpense ? 'text-[#F4F4F0]' : 'text-[#BCFF4F]'}`}>
           {isExpense ? '-' : '+'}{formatIDR(amount)}
         </p>

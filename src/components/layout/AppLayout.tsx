@@ -1,11 +1,16 @@
+'use client';
+
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
+import { useUIStore } from '@/store/uiStore';
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
 export default function AppLayout({ children }: AppLayoutProps) {
+  const { isMobileMenuOpen, closeMobileMenu, isDesktopSidebarOpen } = useUIStore();
+
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
       {/* Background Gears (decorative) */}
@@ -23,9 +28,17 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
       <Sidebar />
 
-      <main className="ml-72 min-h-screen relative z-10">
+      {/* Mobile overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/80 z-40 lg:hidden"
+          onClick={closeMobileMenu}
+        />
+      )}
+
+      <main className={`min-h-screen relative z-10 transition-all duration-300 ${isDesktopSidebarOpen ? 'lg:ml-72' : 'lg:ml-0'}`}>
         <TopBar />
-        <div className="p-8">
+        <div className="p-4 md:p-8 pt-6">
           {children}
         </div>
       </main>

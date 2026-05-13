@@ -107,7 +107,7 @@ export default function TransactionsPage() {
         </div>
         <Button
           onClick={handleOpenCreate}
-          className="bg-[#BCFF4F] text-[#0A0A0A] font-bold py-3 px-8 rounded-full flex items-center gap-2 active:scale-95 duration-150 uppercase text-sm tracking-wider hover:bg-[#a8e640]"
+          className="bg-[#BCFF4F] text-[#0A0A0A] font-bold py-3 md:py-4 px-8 rounded-full flex items-center justify-center gap-2 active:scale-95 duration-150 uppercase text-sm tracking-wider hover:bg-[#a8e640] w-full md:w-auto h-auto whitespace-nowrap"
         >
           Tambah Transaksi
           <span className="material-symbols-outlined text-base">add</span>
@@ -120,7 +120,7 @@ export default function TransactionsPage() {
         <div className="bg-[#BCFF4F] p-8 rounded-lg flex flex-col justify-between h-[180px]">
           <span className="text-[#0A0A0A] font-bold text-xs tracking-widest uppercase opacity-70">TOTAL PEMASUKAN</span>
           <div>
-            <h3 className="text-[#0A0A0A] text-4xl font-black tracking-tighter">{summary ? formatIDR(summary.income) : 'Rp 0'}</h3>
+            <h3 className="text-[#0A0A0A] text-3xl md:text-4xl font-black tracking-tighter truncate">{summary ? formatIDR(summary.income) : 'Rp 0'}</h3>
             {summary && summary.incomeChange !== 0 && (
               <p className="text-[#0A0A0A] font-bold text-sm mt-1 flex items-center gap-1">
                 <span className="material-symbols-outlined text-sm">
@@ -136,7 +136,7 @@ export default function TransactionsPage() {
         <div className="bg-[#141414] p-8 rounded-lg border border-[#BCFF4F]/15 flex flex-col justify-between h-[180px]">
           <span className="text-[#888888] font-bold text-xs tracking-widest uppercase">TOTAL PENGELUARAN</span>
           <div>
-            <h3 className="text-[#F4F4F0] text-4xl font-black tracking-tighter">{summary ? formatIDR(summary.expense) : 'Rp 0'}</h3>
+            <h3 className="text-[#F4F4F0] text-3xl md:text-4xl font-black tracking-tighter truncate">{summary ? formatIDR(summary.expense) : 'Rp 0'}</h3>
             <p className="text-[#888888] font-bold text-sm mt-1">
               {summary && summary.expenseChange !== 0 && `${summary.expenseChange >= 0 ? '+' : ''}${summary.expenseChange}% vs Bulan Lalu`}
             </p>
@@ -147,7 +147,7 @@ export default function TransactionsPage() {
         <div className="bg-[#F4F4F0] p-8 rounded-lg flex flex-col justify-between h-[180px] relative overflow-hidden">
           <span className="text-[#0A0A0A] font-bold text-xs tracking-widest uppercase opacity-70">SELISIH BERSIH</span>
           <div>
-            <h3 className="text-[#0A0A0A] text-4xl font-black tracking-tighter">{summary ? formatIDR(summary.balance) : 'Rp 0'}</h3>
+            <h3 className="text-[#0A0A0A] text-3xl md:text-4xl font-black tracking-tighter truncate">{summary ? formatIDR(summary.balance) : 'Rp 0'}</h3>
             {summary && summary.income > 0 && (
               <div className="w-full bg-[#0A0A0A]/10 h-2 mt-4 rounded-full overflow-hidden">
                 <div
@@ -163,7 +163,7 @@ export default function TransactionsPage() {
       {/* MAIN ROW: LIST & SIDEBAR */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left: Transactions List (8 cols) */}
-        <div className="lg:col-span-8 space-y-8">
+        <div className="lg:col-span-8 space-y-8 order-2 lg:order-1">
           <TransactionList
             transactions={data?.transactions || []}
             isLoading={isLoading}
@@ -206,7 +206,7 @@ export default function TransactionsPage() {
         </div>
 
         {/* Right: Sidebar (4 cols) */}
-        <div className="lg:col-span-4 space-y-6">
+        <div className="lg:col-span-4 space-y-6 order-1 lg:order-2">
           {/* AI Journal Card */}
           <div className="bg-[#BCFF4F] p-6 rounded-lg space-y-4">
             <div className="flex items-center gap-2 text-[#0A0A0A]">

@@ -142,17 +142,17 @@ export default function BudgetingPage() {
   return (
     <AppLayout>
       {/* Header Section */}
-      <section className="flex justify-between items-end mb-12">
+      <section className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
         <div>
-          <h2 className="text-[56px] font-[900] tracking-[-0.04em] leading-tight text-white">Budgeting.</h2>
+          <h2 className="text-4xl md:text-[56px] font-[900] tracking-[-0.04em] leading-tight text-white break-all sm:break-normal">Budgeting.</h2>
           <div className="flex gap-2 mt-4">
             <span className="px-3 py-1 bg-[#1C1B1B] text-[#BCFF4F] text-[10px] font-bold rounded uppercase tracking-tighter">
               {SHORT_MONTHS[month - 1]} {year}
             </span>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex bg-[#141414] p-1 rounded-full">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
+          <div className="flex bg-[#141414] p-1 rounded-full overflow-x-auto w-full sm:w-auto shrink-0">
             <button
               onClick={() => setActiveTab('budget')}
               className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
@@ -172,7 +172,7 @@ export default function BudgetingPage() {
           </div>
           <button
             onClick={() => setShowAddModal(true)}
-            className="bg-[#BCFF4F] text-[#0A0A0A] px-6 py-3 rounded-full font-black text-sm flex items-center gap-2 hover:scale-95 transition-transform"
+            className="bg-[#BCFF4F] text-[#0A0A0A] px-6 py-3 md:py-4 h-auto rounded-full font-black text-sm flex items-center justify-center gap-2 hover:scale-95 transition-transform whitespace-nowrap w-full sm:w-auto"
           >
             Tambah Kategori <span className="material-symbols-outlined text-lg">add</span>
           </button>
@@ -183,13 +183,13 @@ export default function BudgetingPage() {
       {activeTab === 'budget' && (
         <div>
           {/* Overview Card */}
-          <div className="w-full bg-[#BCFF4F] rounded-[2rem] p-12 flex flex-col md:flex-row justify-between items-center mb-12 relative overflow-hidden">
+          <div className="w-full bg-[#BCFF4F] rounded-[2rem] p-6 md:p-12 flex flex-col md:flex-row justify-between items-start md:items-center mb-12 relative overflow-hidden">
             <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-[#0A0A0A]/5 rounded-full blur-3xl" />
             <div className="flex-1 w-full md:w-auto">
               <span className="text-[#0A0A0A] text-[11px] font-black uppercase tracking-[0.2em] block mb-2">
                 BUDGET BULAN INI
               </span>
-              <h3 className="text-[#0A0A0A] text-[64px] font-[900] tracking-[-0.04em] leading-none mb-8">
+              <h3 className="text-[#0A0A0A] text-4xl md:text-[64px] font-[900] tracking-[-0.04em] leading-none mb-4 md:mb-8 truncate">
                 {formatIDR(overview?.totalBudget || 0)}
               </h3>
               <div className="w-full max-w-md h-2 bg-[#0A0A0A]/10 rounded-full overflow-hidden">
@@ -202,8 +202,8 @@ export default function BudgetingPage() {
                 Terpakai: {formatIDR(overview?.totalSpent || 0)} ({overview?.percentage || 0}%)
               </p>
             </div>
-            <div className="flex flex-col items-end mt-8 md:mt-0">
-              <span className="text-[#0A0A0A] text-[100px] font-[900] tracking-[-0.06em] leading-none opacity-90">
+            <div className="flex flex-col items-start md:items-end mt-8 md:mt-0">
+              <span className="text-[#0A0A0A] text-7xl md:text-[100px] font-[900] tracking-[-0.06em] leading-none opacity-90">
                 {overview?.percentage || 0}%
               </span>
               <p className="text-[#0A0A0A] text-sm font-black -mt-4 uppercase tracking-tighter italic">

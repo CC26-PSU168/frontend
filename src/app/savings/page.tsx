@@ -92,16 +92,16 @@ export default function SavingsPage() {
   return (
     <AppLayout>
       {/* Header */}
-      <section className="flex justify-between items-end mb-12">
+      <section className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
         <div>
-          <h2 className="text-[56px] font-[900] tracking-[-0.04em] leading-none text-white">Target Tabungan.</h2>
-          <p className="text-[#888888] text-lg mt-4 font-medium italic">
+          <h2 className="text-4xl md:text-[56px] font-[900] tracking-[-0.04em] leading-none text-white break-all sm:break-normal">Target Tabungan.</h2>
+          <p className="text-[#888888] text-base md:text-lg mt-4 font-medium italic">
             {formatIDR(totalSaved)} terkumpul dari semua goal
           </p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="bg-[#BCFF4F] text-[#0A0A0A] px-10 py-5 rounded-full font-[900] tracking-[-0.04em] text-lg hover:bg-[#99D929] transition-colors flex items-center gap-2"
+          className="bg-[#BCFF4F] text-[#0A0A0A] px-8 md:px-10 py-4 md:py-5 rounded-full font-[900] tracking-[-0.04em] text-base md:text-lg hover:bg-[#99D929] transition-colors flex items-center justify-center gap-2 w-full md:w-auto h-auto whitespace-nowrap"
         >
           Tambah Goal <span className="material-symbols-outlined font-black">add</span>
         </button>
@@ -109,10 +109,10 @@ export default function SavingsPage() {
 
       {/* Hero Card */}
       <section className="mb-12">
-        <div className="bg-[#BCFF4F] rounded-[2rem] p-12 flex justify-between items-center relative overflow-hidden group">
+        <div className="bg-[#BCFF4F] rounded-[2rem] p-6 md:p-12 flex flex-col md:flex-row justify-between items-start md:items-center relative overflow-hidden group">
           <div className="relative z-10">
             <span className="text-[#0A0A0A] font-bold text-xs tracking-[0.2em] uppercase mb-4 block">TOTAL TERSIMPAN</span>
-            <h3 className="text-[84px] font-[900] tracking-[-0.04em] text-[#0A0A0A] leading-none mb-8">{formatIDR(totalSaved)}</h3>
+            <h3 className="text-5xl md:text-[84px] font-[900] tracking-[-0.04em] text-[#0A0A0A] leading-none mb-4 md:mb-8 truncate">{formatIDR(totalSaved)}</h3>
             <div className="w-full bg-[#0A0A0A]/10 h-3 rounded-full overflow-hidden max-w-2xl">
               <div className="bg-[#0A0A0A] h-full transition-all duration-700" style={{ width: `${Math.min(totalPercentage, 100)}%` }} />
             </div>
@@ -120,8 +120,8 @@ export default function SavingsPage() {
               {totalPercentage}% Terisi dari target total
             </p>
           </div>
-          <div className="relative z-10 text-right">
-            <span className="text-[120px] font-[900] tracking-[-0.04em] text-[#0A0A0A] leading-none block">{totalPercentage}%</span>
+          <div className="relative z-10 text-left md:text-right mt-8 md:mt-0">
+            <span className="text-7xl md:text-[120px] font-[900] tracking-[-0.04em] text-[#0A0A0A] leading-none block">{totalPercentage}%</span>
             <span className="text-[#0A0A0A] font-bold text-sm tracking-widest block opacity-60">
               {totalPercentage >= 80 ? 'HAMPIR TERCAPAI' : 'ON TRACK'}
             </span>
@@ -132,7 +132,7 @@ export default function SavingsPage() {
 
       {/* Goal Cards Grid */}
       {goals && goals.length > 0 ? (
-        <section className="grid grid-cols-2 gap-8 items-start mb-16">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mb-16">
           {goals.map((goal, index) => {
             const circumference = 2 * Math.PI * 40;
             const strokeOffset = circumference - (goal.percentage / 100) * circumference;
@@ -194,7 +194,7 @@ export default function SavingsPage() {
                   isCompleted
                     ? 'bg-[#BCFF4F] border-[#BCFF4F] shadow-[0_0_50px_rgba(188,255,79,0.15)]'
                     : 'bg-[#141414] border-[#BCFF4F]/5 hover:border-[#BCFF4F]/20'
-                } rounded-[2rem] p-8 border transition-all flex justify-between items-center group relative`}
+                } rounded-[2rem] p-6 sm:p-8 border transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center group relative gap-4 sm:gap-0`}
               >
                 <button onClick={() => handleDeleteGoal(goal.id)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className={`material-symbols-outlined text-sm ${isCompleted ? 'text-[#0A0A0A]/40 hover:text-red-600' : 'text-[#888888] hover:text-red-400'}`}>delete</span>
@@ -208,7 +208,7 @@ export default function SavingsPage() {
                     {formatIDR(goal.currentAmount)} / {formatIDR(goal.targetAmount)}
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="text-left sm:text-right w-full sm:w-auto flex flex-row sm:flex-col justify-between items-center sm:items-end">
                   <span className={`text-5xl font-[900] tracking-[-0.04em] block ${isCompleted ? 'text-[#0A0A0A] opacity-30' : 'text-[#BCFF4F]'}`}>
                     {goal.percentage}%
                   </span>
@@ -248,7 +248,7 @@ export default function SavingsPage() {
             </div>
             <h3 className="text-3xl font-[900] tracking-[-0.04em] text-white">AI Saving Tips</h3>
           </div>
-          <div className="grid grid-cols-2 gap-8 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
             <div className="bg-[#0A0A0A] p-8 rounded-[1rem] border-l-4 border-[#BCFF4F] flex gap-6 items-start">
               <span className="material-symbols-outlined text-[#BCFF4F] text-4xl">lightbulb</span>
               <div>
