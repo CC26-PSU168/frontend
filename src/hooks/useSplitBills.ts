@@ -20,9 +20,19 @@ export function useCreateSplitBill() {
   return useMutation({
     mutationFn: async (data: {
       title: string;
-      totalAmount: number;
       date: string;
-      participants: { name: string; shareAmount: number }[];
+      splitMethod: 'equal' | 'item';
+      items: {
+        name: string;
+        qty: number;
+        unitPrice: number;
+        subtotal: number;
+      }[];
+      participants: { name: string }[];
+      assignments?: {
+        itemIndex: number;
+        participantIndices: number[];
+      }[];
     }) => {
       const res = await api.post('/split-bill', data);
       return res.data.data;
@@ -48,8 +58,16 @@ export function useDeleteSplitBill() {
 export function useMarkPaid() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ splitBillId, participantId }: { splitBillId: string; participantId: string }) => {
-      const res = await api.patch(`/split-bill/${splitBillId}/participants/${participantId}/pay`);
+    mutationFn: async ({
+      splitBillId,
+      participantId,
+    }: {
+      splitBillId: string;
+      participantId: string;
+    }) => {
+      const res = await api.patch(
+        `/split-bill/${splitBillId}/participants/${participantId}/pay`
+      );
       return res.data.data;
     },
     onSuccess: () => {
