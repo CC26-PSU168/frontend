@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 
-export default function OAuthCallbackPage() {
+// Inner component that uses useSearchParams — must be inside <Suspense>
+function OAuthCallbackInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const setTokens = useAuthStore((state) => state.setTokens);
@@ -21,16 +22,13 @@ export default function OAuthCallbackPage() {
     }
 
     if (accessToken && refreshToken) {
-      // Setup session properly
       setTokens(accessToken, refreshToken);
-      
-      // Attempt to load profile, then redirect to dashboard
+
       fetchProfile()
         .then(() => {
           router.push('/dashboard');
         })
         .catch(() => {
-          // If profile fetch fails, user might need to retry login
           router.push('/auth/login?error=profile_fetch_failed');
         });
     } else {
@@ -40,8 +38,24 @@ export default function OAuthCallbackPage() {
 
   return (
     <div className="min-h-screen bg-neutral-950 flex flex-col items-center justify-center text-neutral-100">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-lime mb-4"></div>
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-lime mb-4" />
       <p className="text-neutral-400">Menghubungkan akun Google Anda...</p>
     </div>
+  );
+}
+
+// Page export wraps inner component with Suspense (required by Next.js 14+)
+export default function OAuthCallbackPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-neutral-950 flex flex-col items-center justify-center text-neutral-100">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-lime mb-4" />
+          <p className="text-neutral-400">Memuat...</p>
+        </div>
+      }
+    >
+      <OAuthCallbackInner />
+    </Suspense>
   );
 }
