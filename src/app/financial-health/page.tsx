@@ -49,7 +49,7 @@ export default function FinancialHealthPage() {
           </p>
         </section>
 
-        {/* Dynamic Bar Chart */}
+        {/* Hero Chart — Dynamic Monthly Bar Chart */}
         <section className="bg-[#141414] rounded-lg p-8 relative overflow-hidden border border-[#BCFF4F]/5">
           <div className="flex justify-between items-start mb-8">
             <div>
@@ -79,22 +79,23 @@ export default function FinancialHealthPage() {
             </div>
           </div>
 
+          {/* Dynamic Bar Chart */}
           {trendLoading ? (
-            <div className="flex items-end gap-2 h-[200px] px-2">
+            <div className="flex items-end gap-3 h-[200px] px-2">
               {Array.from({ length: 6 }).map((_, i) => (
                 <Skeleton key={i} className="flex-1 bg-white/10 rounded-t-sm" style={{ height: `${30 + (i * 17) % 60}%` }} />
               ))}
             </div>
           ) : (
-            <div className="flex items-end gap-3 h-[200px] px-2">
+            <div className="flex items-end gap-3 px-2" style={{ height: '200px' }}>
               {(trend ?? []).map((d) => {
-                const expPct = d.expense > 0 ? Math.max((d.expense / maxVal) * 100, 5) : 0;
-                const incPct = d.income > 0 ? Math.max((d.income / maxVal) * 100, 5) : 0;
+                const expPct = d.expense > 0 ? Math.max((d.expense / maxVal) * 100, 6) : 0;
+                const incPct = d.income > 0 ? Math.max((d.income / maxVal) * 100, 6) : 0;
                 const [, m] = d.month.split('-');
-                const monthLabel = MONTH_NAMES[parseInt(m, 10) - 1];
+                const label = MONTH_NAMES[parseInt(m, 10) - 1];
                 return (
-                  <div key={d.month} className="flex-1 flex flex-col items-center gap-1 group cursor-pointer">
-                    <div className="w-full flex items-end gap-0.5" style={{ height: '180px' }}>
+                  <div key={d.month} className="flex-1 flex flex-col items-center gap-1 group cursor-pointer h-full justify-end">
+                    <div className="w-full flex items-end gap-0.5 h-[180px]">
                       <div
                         className="flex-1 rounded-t-sm bg-white/20 group-hover:bg-white/40 transition-all"
                         style={{ height: `${incPct}%` }}
@@ -106,7 +107,9 @@ export default function FinancialHealthPage() {
                         title={`Pengeluaran: ${formatCompact(d.expense)}`}
                       />
                     </div>
-                    <span className="text-[10px] font-[900] text-[#888888] uppercase">{monthLabel}</span>
+                    <span className={`text-[10px] font-[900] uppercase ${d.expense > 0 || d.income > 0 ? 'text-[#BCFF4F]' : 'text-[#888888]'}`}>
+                      {label}
+                    </span>
                   </div>
                 );
               })}
@@ -114,9 +117,9 @@ export default function FinancialHealthPage() {
           )}
         </section>
 
-        {/* Category Forecast Bento Grid — Dynamic */}
+        {/* Category Bento Grid — Dynamic */}
         <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {/* Main Highlight */}
+          {/* Main Highlight Card */}
           <div className="md:col-span-2 md:row-span-2 bg-[#BCFF4F] rounded-lg p-10 flex flex-col justify-between group cursor-pointer transition-transform duration-300 hover:scale-[1.02]">
             <div>
               <h4 className="text-[#0A0A0A] text-xs font-[900] tracking-[0.3em] uppercase">
@@ -149,42 +152,48 @@ export default function FinancialHealthPage() {
           </div>
 
           {/* Category Cards — Dynamic */}
-          {categoriesLoading
-            ? Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="bg-[#141414] rounded-lg p-6 border border-white/5">
-                  <Skeleton className="h-8 w-8 bg-white/10 rounded-lg mb-4" />
-                  <Skeleton className="h-4 w-20 bg-white/10 mb-2" />
-                  <Skeleton className="h-6 w-24 bg-white/10" />
-                </div>
-              ))
-            : topCategories.length > 0
-            ? topCategories.map((cat) => {
-                const icon = CATEGORY_ICONS[cat.category] || 'category';
-                return (
-                  <div key={cat.category} className="bg-[#141414] rounded-lg p-6 border border-white/5 flex flex-col justify-between hover:bg-[#1C1B1B] transition-colors">
-                    <div className="flex justify-between items-start">
-                      <div className="bg-white/5 p-3 rounded-lg">
-                        <span className="material-symbols-outlined text-[#BCFF4F]">{icon}</span>
-                      </div>
-                      <span className="text-[10px] font-bold text-[#888888]">{cat.percentage}%</span>
+          {categoriesLoading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-[#141414] rounded-lg p-6 border border-white/5">
+                <Skeleton className="h-8 w-8 bg-white/10 rounded-lg mb-4" />
+                <Skeleton className="h-4 w-20 bg-white/10 mb-2" />
+                <Skeleton className="h-6 w-24 bg-white/10" />
+              </div>
+            ))
+          ) : topCategories.length > 0 ? (
+            topCategories.map((cat) => {
+              const icon = CATEGORY_ICONS[cat.category] || 'category';
+              return (
+                <div
+                  key={cat.category}
+                  className="bg-[#141414] rounded-lg p-6 border border-white/5 flex flex-col justify-between hover:bg-[#1C1B1B] transition-colors"
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="bg-white/5 p-3 rounded-lg">
+                      <span className="material-symbols-outlined text-[#BCFF4F]">{icon}</span>
                     </div>
-                    <div>
-                      <p className="text-[10px] uppercase font-[900] text-[#888888] tracking-widest truncate">
-                        {cat.category}
-                      </p>
-                      <h4 className="text-xl font-[900] mt-1">{formatCompact(cat.amount)}</h4>
-                      <div className="w-full bg-white/10 rounded-full h-1 mt-2">
-                        <div className="bg-[#BCFF4F] h-full rounded-full" style={{ width: `${cat.percentage}%` }} />
-                      </div>
+                    <span className="text-[10px] font-bold text-[#888888]">{cat.percentage}%</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase font-[900] text-[#888888] tracking-widest truncate">
+                      {cat.category}
+                    </p>
+                    <h4 className="text-xl font-[900] mt-1">{formatCompact(cat.amount)}</h4>
+                    <div className="w-full bg-white/10 rounded-full h-1 mt-2">
+                      <div
+                        className="bg-[#BCFF4F] h-full rounded-full"
+                        style={{ width: `${cat.percentage}%` }}
+                      />
                     </div>
                   </div>
-                );
-              })
-            : (
-                <div className="md:col-span-2 bg-[#141414] rounded-lg p-6 border border-white/5 flex items-center justify-center text-[#888888] text-sm font-bold">
-                  Belum ada data kategori bulan ini
                 </div>
-              )}
+              );
+            })
+          ) : (
+            <div className="md:col-span-2 bg-[#141414] rounded-lg p-6 border border-white/5 flex items-center justify-center text-[#888888] text-sm font-bold">
+              Belum ada data kategori bulan ini
+            </div>
+          )}
         </section>
 
         {/* AI Forecast Summary */}
@@ -205,7 +214,8 @@ export default function FinancialHealthPage() {
                 </div>
               ) : (
                 <p className="text-xl leading-relaxed text-[#F4F4F0]">
-                  {forecastNarrative || 'Mulai kumpulkan data transaksi agar Cuan AI bisa memprediksi masa depan keuanganmu dengan akurat.'}
+                  {forecastNarrative ||
+                    'Mulai kumpulkan data transaksi agar Cuan AI bisa memprediksi masa depan keuanganmu dengan akurat.'}
                 </p>
               )}
               <div className="flex flex-wrap gap-3 mt-8">
@@ -224,7 +234,8 @@ export default function FinancialHealthPage() {
             <div className="bg-[#0A0A0A] rounded-lg p-6 border border-white/5 space-y-6">
               <div className="flex items-center gap-4">
                 <div className="text-4xl font-[900] text-[#BCFF4F]">
-                  {(trend?.filter(t => t.expense > 0).length ?? 0) >= 5 ? '88%' : `${Math.min((trend?.filter(t => t.expense > 0).length ?? 0) * 20, 80)}%`}
+                  {(trend?.filter(t => t.expense > 0).length ?? 0) >= 4 ? '88%' :
+                    `${Math.min((trend?.filter(t => t.expense > 0).length ?? 0) * 22, 88)}%`}
                 </div>
                 <div className="text-[10px] font-bold uppercase tracking-widest text-[#888888]">
                   Akurasi Prediksi AI
@@ -233,7 +244,10 @@ export default function FinancialHealthPage() {
               <div className="h-1 bg-white/5 w-full rounded-full overflow-hidden">
                 <div
                   className="h-full bg-[#BCFF4F] transition-all"
-                  style={{ width: `${(trend?.filter(t => t.expense > 0).length ?? 0) >= 5 ? 88 : Math.min((trend?.filter(t => t.expense > 0).length ?? 0) * 20, 80)}%` }}
+                  style={{
+                    width: `${(trend?.filter(t => t.expense > 0).length ?? 0) >= 4 ? 88 :
+                      Math.min((trend?.filter(t => t.expense > 0).length ?? 0) * 22, 88)}%`
+                  }}
                 />
               </div>
               <p className="text-xs text-[#888888] leading-tight">

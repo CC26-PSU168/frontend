@@ -48,12 +48,12 @@ export default function SpendingTrendChart({ data, isLoading }: SpendingTrendCha
         </div>
       ) : (
         <>
-          <div className="flex-1 flex items-end gap-2 px-2" style={{ height: '160px' }}>
+          <div className="flex-1 flex items-end gap-2 px-2" style={{ height: '200px' }}>
             {data.map((d) => {
               const pct = d.expense > 0 ? Math.max((d.expense / maxExpense) * 100, 8) : 0;
               const isMax = d.expense === maxExpense && d.expense > 0;
               return (
-                <div key={d.month} className="flex-1 flex flex-col items-center group cursor-pointer justify-end" style={{ height: '100%' }}>
+                <div key={d.month} className="flex-1 flex flex-col items-end justify-end h-full group cursor-pointer">
                   {d.expense === 0 ? (
                     <div className="w-full h-[2px] bg-white/10 rounded-full" />
                   ) : (
@@ -64,7 +64,7 @@ export default function SpendingTrendChart({ data, isLoading }: SpendingTrendCha
                       style={{ height: `${pct}%` }}
                     >
                       {/* Tooltip */}
-                      <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-[#0A0A0A] text-[#BCFF4F] text-[9px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-[#BCFF4F]/20">
+                      <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-[#0A0A0A] text-[#BCFF4F] text-[9px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-[#BCFF4F]/20 z-10">
                         {formatK(d.expense)}
                       </div>
                     </div>
@@ -73,11 +73,11 @@ export default function SpendingTrendChart({ data, isLoading }: SpendingTrendCha
               );
             })}
           </div>
-          <div className="mt-3 flex justify-between text-[10px] font-black text-[#888888]">
+          <div className="mt-3 flex justify-between text-[10px] font-black">
             {data.map((d) => {
               const [, m] = d.month.split('-');
               return (
-                <span key={d.month} className={d.expense > 0 ? 'text-[#BCFF4F]' : ''}>
+                <span key={d.month} className={d.expense > 0 ? 'text-[#BCFF4F]' : 'text-[#888888]'}>
                   {MONTH_NAMES[parseInt(m, 10) - 1]}
                 </span>
               );
