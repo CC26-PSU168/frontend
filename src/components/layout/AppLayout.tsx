@@ -1,8 +1,10 @@
 'use client';
 
+import { useEffect } from 'react';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import { useUIStore } from '@/store/uiStore';
+import { useAuthStore } from '@/store/authStore';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -10,6 +12,15 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children }: AppLayoutProps) {
   const { isMobileMenuOpen, closeMobileMenu, isDesktopSidebarOpen } = useUIStore();
+  const { fetchProfile, user } = useAuthStore();
+
+  // Re-hydrate user session on every page load / navigation
+  useEffect(() => {
+    if (!user) {
+      fetchProfile().catch(() => {});
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
