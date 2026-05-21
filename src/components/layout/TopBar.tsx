@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import LogoImage from '@/components/common/LogoImage';
 import { useAuthStore } from '@/store/authStore';
 import { useNotifications, useMarkNotificationAsRead, useMarkAllNotificationsAsRead, useDeleteNotification, Notification } from '@/hooks/useNotifications';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -49,12 +48,6 @@ export default function TopBar() {
       >
         <span className="material-symbols-outlined">menu</span>
       </button>
-
-      {/* Small logo + brand for compact header */}
-      <Link href="/" className="flex items-center gap-2 lg:hidden">
-        <LogoImage className="w-8 h-8 rounded-full object-cover" />
-        <span className="text-[#F4F4F0] font-[900] text-sm">Budgetly.</span>
-      </Link>
 
       {/* Desktop Menu Button */}
       <button 

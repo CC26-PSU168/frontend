@@ -36,6 +36,7 @@ export const NAV_ITEMS = [
   { href: '/savings', label: 'Savings', icon: 'savings' },
   { href: '/split-bill', label: 'Split Bill', icon: 'call_split' },
   { href: '/financial-health', label: 'Financial Health', icon: 'health_and_safety' },
+  { href: '/chatbot', label: 'Cuan AI', icon: 'psychology' },
   { href: '/investment', label: 'Investasi', icon: 'trending_up' },
 ] as const;
 

@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { NAV_ITEMS, APP_NAME, APP_TAGLINE } from '@/lib/constants';
 import { useUIStore } from '@/store/uiStore';
-import LogoImage from '@/components/common/LogoImage';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -17,17 +16,14 @@ export default function Sidebar() {
       ${isDesktopSidebarOpen ? 'lg:translate-x-0' : 'lg:-translate-x-full'}
     `}>
       {/* Logo */}
-      <div className="px-5 mb-12 mt-2 group">
-        <Link href="/dashboard" className="flex items-center gap-3 transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
-          <LogoImage className="w-15 h-15 rounded-full object-cover" />
-          <div className="flex flex-col">
-            <h1 className="text-3xl font-[900] tracking-[-0.04em] text-[#BCFF4F] leading-none mb-1">
-              {APP_NAME}
-            </h1>
-            <p className="text-[10px] uppercase tracking-widest text-[#888888] font-bold leading-none">
-              {APP_TAGLINE}
-            </p>
-          </div>
+      <div className="px-8 mb-12">
+        <Link href="/dashboard">
+          <h1 className="text-3xl font-[900] tracking-[-0.04em] text-[#BCFF4F]">
+            {APP_NAME}
+          </h1>
+          <p className="text-[10px] uppercase tracking-widest text-[#888888] mt-1 font-bold">
+            {APP_TAGLINE}
+          </p>
         </Link>
       </div>
 
