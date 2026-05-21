@@ -2,12 +2,44 @@
 
 import Link from 'next/link';
 import AppLayout from '@/components/layout/AppLayout';
+import { useAiNarrative } from '@/hooks/useAiInsights';
+import { useMonthlyTrend, useCategoryBreakdown, useTransactionSummary } from '@/hooks/useTransactions';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const CATEGORY_ICONS: Record<string, string> = {
+  'Makanan & Minuman': 'restaurant',
+  'Transportasi': 'commute',
+  'Hiburan & Lifestyle': 'movie',
+  'Langganan': 'subscriptions',
+  'Belanja': 'shopping_bag',
+  'Kesehatan': 'medical_services',
+  'Lainnya': 'category',
+};
+
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+function formatCompact(value: number) {
+  if (value >= 1_000_000) return `Rp ${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `Rp ${(value / 1_000).toFixed(0)}K`;
+  return `Rp ${value.toFixed(0)}`;
+}
 
 export default function FinancialHealthPage() {
+  const { data: forecastNarrative, isLoading: isAiLoading } = useAiNarrative('forecast');
+  const { data: trend, isLoading: trendLoading } = useMonthlyTrend(6);
+  const { data: categories, isLoading: categoriesLoading } = useCategoryBreakdown();
+  const { data: summary, isLoading: summaryLoading } = useTransactionSummary();
+
+  const maxVal = Math.max(...(trend?.map(t => Math.max(t.expense, t.income)) ?? []), 1);
+  const topCategories = categories?.slice(0, 4) ?? [];
+  const totalExpense = summary?.expense ?? 0;
+  const totalIncome = summary?.income ?? 0;
+  const surplus = totalIncome - totalExpense;
+
   return (
     <AppLayout>
       <div className="space-y-12">
-        {/* Header Section */}
+        {/* Header */}
         <section>
           <h2 className="text-[40px] font-[900] tracking-[-0.04em] text-white leading-tight">
             Prediksi Pengeluaran.
@@ -17,176 +49,151 @@ export default function FinancialHealthPage() {
           </p>
         </section>
 
-        {/* Hero Chart Card */}
+        {/* Hero Chart — Dynamic Monthly Bar Chart */}
         <section className="bg-[#141414] rounded-lg p-8 relative overflow-hidden border border-[#BCFF4F]/5">
-          <div className="flex justify-between items-start mb-12">
+          <div className="flex justify-between items-start mb-8">
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-[#888888] font-[900]">
                 Volume Transaksi Bulanan
               </p>
-              <h3 className="text-4xl font-[900] mt-1">
-                Rp 4.250.000{' '}
-                <span className="text-[#BCFF4F] text-sm align-top ml-2">+12%</span>
-              </h3>
+              {summaryLoading ? (
+                <Skeleton className="h-10 w-[200px] bg-white/10 mt-2" />
+              ) : (
+                <h3 className="text-4xl font-[900] mt-1">
+                  {formatCompact(totalExpense)}{' '}
+                  <span className={`text-sm align-top ml-2 ${surplus >= 0 ? 'text-[#BCFF4F]' : 'text-red-400'}`}>
+                    {surplus >= 0 ? '+' : ''}{formatCompact(Math.abs(surplus))} surplus
+                  </span>
+                </h3>
+              )}
             </div>
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 bg-[#BCFF4F] rounded-full" />
-                <span className="text-xs font-bold text-[#F4F4F0]">Aktual</span>
+                <span className="text-xs font-bold text-[#F4F4F0]">Pengeluaran</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 border border-white border-dashed rounded-full" />
-                <span className="text-xs font-bold text-[#888888]">Prediksi</span>
+                <span className="w-3 h-3 bg-white/30 rounded-full" />
+                <span className="text-xs font-bold text-[#888888]">Pemasukan</span>
               </div>
             </div>
           </div>
 
-          {/* SVG Chart */}
-          <div className="h-[400px] w-full relative flex items-end justify-between px-4">
-            {/* Grid Lines */}
-            <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-10">
-              <div className="border-t border-[#888888] w-full" />
-              <div className="border-t border-[#888888] w-full" />
-              <div className="border-t border-[#888888] w-full" />
-              <div className="border-t border-[#888888] w-full" />
+          {/* Dynamic Bar Chart */}
+          {trendLoading ? (
+            <div className="flex items-end gap-3 h-[200px] px-2">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="flex-1 bg-white/10 rounded-t-sm" style={{ height: `${30 + (i * 17) % 60}%` }} />
+              ))}
             </div>
-
-            <svg
-              className="absolute inset-0 w-full h-full"
-              preserveAspectRatio="none"
-              viewBox="0 0 1000 400"
-            >
-              {/* Confidence Interval Shading */}
-              <path
-                d="M 600 250 L 700 200 L 800 230 L 900 180 L 1000 150 L 1000 280 L 900 310 L 800 350 L 700 320 L 600 250"
-                fill="white"
-                fillOpacity="0.05"
-              />
-              {/* Prediction Dashed Line */}
-              <path
-                d="M 600 250 L 700 260 L 800 290 L 900 240 L 1000 210"
-                fill="none"
-                stroke="white"
-                strokeDasharray="10,10"
-                strokeWidth="3"
-              />
-              {/* Actual Solid Lime Line */}
-              <path
-                d="M 0 350 L 100 300 L 200 320 L 300 220 L 400 240 L 500 180 L 600 250"
-                fill="none"
-                stroke="#BCFF4F"
-                strokeWidth="5"
-              />
-            </svg>
-
-            {/* Month Labels */}
-            <div className="absolute bottom-[-32px] w-full flex justify-between px-2 text-[10px] font-[900] text-[#888888] tracking-widest uppercase">
-              <span>Nov</span>
-              <span>Des</span>
-              <span>Jan</span>
-              <span>Feb</span>
-              <span>Mar</span>
-              <span>Apr</span>
-              <span className="text-[#BCFF4F]">Mei</span>
+          ) : (
+            <div className="flex items-end gap-3 px-2" style={{ height: '200px' }}>
+              {(trend ?? []).map((d) => {
+                const expPct = d.expense > 0 ? Math.max((d.expense / maxVal) * 100, 6) : 0;
+                const incPct = d.income > 0 ? Math.max((d.income / maxVal) * 100, 6) : 0;
+                const [, m] = d.month.split('-');
+                const label = MONTH_NAMES[parseInt(m, 10) - 1];
+                return (
+                  <div key={d.month} className="flex-1 flex flex-col items-center gap-1 group cursor-pointer h-full justify-end">
+                    <div className="w-full flex items-end gap-0.5 h-[180px]">
+                      <div
+                        className="flex-1 rounded-t-sm bg-white/20 group-hover:bg-white/40 transition-all"
+                        style={{ height: `${incPct}%` }}
+                        title={`Pemasukan: ${formatCompact(d.income)}`}
+                      />
+                      <div
+                        className="flex-1 rounded-t-sm bg-[#BCFF4F]/80 group-hover:bg-[#BCFF4F] transition-all"
+                        style={{ height: `${expPct}%` }}
+                        title={`Pengeluaran: ${formatCompact(d.expense)}`}
+                      />
+                    </div>
+                    <span className={`text-[10px] font-[900] uppercase ${d.expense > 0 || d.income > 0 ? 'text-[#BCFF4F]' : 'text-[#888888]'}`}>
+                      {label}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
-          </div>
+          )}
         </section>
 
-        {/* Forecast By Category Bento Grid */}
+        {/* Category Bento Grid — Dynamic */}
         <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {/* Highlight Card */}
+          {/* Main Highlight Card */}
           <div className="md:col-span-2 md:row-span-2 bg-[#BCFF4F] rounded-lg p-10 flex flex-col justify-between group cursor-pointer transition-transform duration-300 hover:scale-[1.02]">
             <div>
               <h4 className="text-[#0A0A0A] text-xs font-[900] tracking-[0.3em] uppercase">
-                Total Prediksi Mei
+                Pengeluaran Bulan Ini
               </h4>
               <div className="mt-4">
-                <span className="text-[#0A0A0A] text-6xl font-[900] tracking-tighter">
-                  Rp 3.8M
-                </span>
+                {summaryLoading ? (
+                  <Skeleton className="h-14 w-[180px] bg-black/10" />
+                ) : (
+                  <span className="text-[#0A0A0A] text-5xl font-[900] tracking-tighter">
+                    {formatCompact(totalExpense)}
+                  </span>
+                )}
               </div>
             </div>
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b-2 border-[#0A0A0A]/10 pb-4">
-                <span className="text-[#0A0A0A] font-bold">Limit Anggaran</span>
-                <span className="text-[#0A0A0A] font-[900]">Rp 4.5M</span>
+                <span className="text-[#0A0A0A] font-bold">Pemasukan</span>
+                <span className="text-[#0A0A0A] font-[900]">
+                  {summaryLoading ? '—' : formatCompact(totalIncome)}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[#0A0A0A] font-bold">Status</span>
-                <span className="bg-[#0A0A0A] text-[#BCFF4F] px-4 py-1 rounded-full text-xs font-[900]">
-                  AMAN
+                <span className={`px-4 py-1 rounded-full text-xs font-[900] ${surplus >= 0 ? 'bg-[#0A0A0A] text-[#BCFF4F]' : 'bg-red-500 text-white'}`}>
+                  {surplus >= 0 ? 'SURPLUS' : 'DEFISIT'}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Food & Drink */}
-          <div className="bg-[#141414] rounded-lg p-6 border border-white/5 flex flex-col justify-between hover:bg-[#1C1B1B] transition-colors">
-            <div className="flex justify-between items-start">
-              <div className="bg-white/5 p-3 rounded-lg">
-                <span className="material-symbols-outlined text-[#BCFF4F]">restaurant</span>
+          {/* Category Cards — Dynamic */}
+          {categoriesLoading ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-[#141414] rounded-lg p-6 border border-white/5">
+                <Skeleton className="h-8 w-8 bg-white/10 rounded-lg mb-4" />
+                <Skeleton className="h-4 w-20 bg-white/10 mb-2" />
+                <Skeleton className="h-6 w-24 bg-white/10" />
               </div>
-              <span className="text-[10px] font-bold text-red-400">+18%</span>
+            ))
+          ) : topCategories.length > 0 ? (
+            topCategories.map((cat) => {
+              const icon = CATEGORY_ICONS[cat.category] || 'category';
+              return (
+                <div
+                  key={cat.category}
+                  className="bg-[#141414] rounded-lg p-6 border border-white/5 flex flex-col justify-between hover:bg-[#1C1B1B] transition-colors"
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="bg-white/5 p-3 rounded-lg">
+                      <span className="material-symbols-outlined text-[#BCFF4F]">{icon}</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-[#888888]">{cat.percentage}%</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase font-[900] text-[#888888] tracking-widest truncate">
+                      {cat.category}
+                    </p>
+                    <h4 className="text-xl font-[900] mt-1">{formatCompact(cat.amount)}</h4>
+                    <div className="w-full bg-white/10 rounded-full h-1 mt-2">
+                      <div
+                        className="bg-[#BCFF4F] h-full rounded-full"
+                        style={{ width: `${cat.percentage}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="md:col-span-2 bg-[#141414] rounded-lg p-6 border border-white/5 flex items-center justify-center text-[#888888] text-sm font-bold">
+              Belum ada data kategori bulan ini
             </div>
-            <div>
-              <p className="text-[10px] uppercase font-[900] text-[#888888] tracking-widest">
-                Food &amp; Drink
-              </p>
-              <h4 className="text-xl font-[900] mt-1">Rp 1.250k</h4>
-              <p className="text-[10px] text-[#888888] mt-2">Bulan lalu: Rp 1.059k</p>
-            </div>
-          </div>
-
-          {/* Transport */}
-          <div className="bg-[#141414] rounded-lg p-6 border border-white/5 flex flex-col justify-between hover:bg-[#1C1B1B] transition-colors">
-            <div className="flex justify-between items-start">
-              <div className="bg-white/5 p-3 rounded-lg">
-                <span className="material-symbols-outlined text-[#BCFF4F]">commute</span>
-              </div>
-              <span className="text-[10px] font-bold text-[#BCFF4F]">-5%</span>
-            </div>
-            <div>
-              <p className="text-[10px] uppercase font-[900] text-[#888888] tracking-widest">
-                Transport
-              </p>
-              <h4 className="text-xl font-[900] mt-1">Rp 450k</h4>
-              <p className="text-[10px] text-[#888888] mt-2">Bulan lalu: Rp 473k</p>
-            </div>
-          </div>
-
-          {/* Entertainment */}
-          <div className="bg-[#141414] rounded-lg p-6 border border-white/5 flex flex-col justify-between hover:bg-[#1C1B1B] transition-colors">
-            <div className="flex justify-between items-start">
-              <div className="bg-white/5 p-3 rounded-lg">
-                <span className="material-symbols-outlined text-[#BCFF4F]">movie</span>
-              </div>
-              <span className="text-[10px] font-bold text-[#BCFF4F]">-12%</span>
-            </div>
-            <div>
-              <p className="text-[10px] uppercase font-[900] text-[#888888] tracking-widest">
-                Entertainment
-              </p>
-              <h4 className="text-xl font-[900] mt-1">Rp 600k</h4>
-              <p className="text-[10px] text-[#888888] mt-2">Bulan lalu: Rp 680k</p>
-            </div>
-          </div>
-
-          {/* Subscriptions */}
-          <div className="bg-[#141414] rounded-lg p-6 border border-white/5 flex flex-col justify-between hover:bg-[#1C1B1B] transition-colors">
-            <div className="flex justify-between items-start">
-              <div className="bg-white/5 p-3 rounded-lg">
-                <span className="material-symbols-outlined text-[#BCFF4F]">subscriptions</span>
-              </div>
-              <span className="text-[10px] font-bold text-[#888888]">STABIL</span>
-            </div>
-            <div>
-              <p className="text-[10px] uppercase font-[900] text-[#888888] tracking-widest">
-                Subskripsi
-              </p>
-              <h4 className="text-xl font-[900] mt-1">Rp 150k</h4>
-              <p className="text-[10px] text-[#888888] mt-2">Bulan lalu: Rp 150k</p>
-            </div>
-          </div>
+          )}
         </section>
 
         {/* AI Forecast Summary */}
@@ -199,41 +206,52 @@ export default function FinancialHealthPage() {
           </div>
           <div className="grid md:grid-cols-3 gap-12">
             <div className="md:col-span-2">
-              <p className="text-xl leading-relaxed text-[#F4F4F0]">
-                Hai Sobat Cuan! Berdasarkan data bulan April, pengeluaran kamu di kategori{' '}
-                <span className="text-[#BCFF4F] font-bold">Food &amp; Drink</span> cenderung
-                naik saat weekend sebesar 25%. Kami memprediksi bulan Mei kamu bisa menghemat
-                hingga{' '}
-                <span className="text-[#BCFF4F] font-bold">Rp 350.000</span> jika membatasi
-                &apos;ngopi senja&apos; di hari kerja.
-              </p>
+              {isAiLoading ? (
+                <div className="space-y-2 mb-8">
+                  <Skeleton className="h-4 w-full bg-white/10" />
+                  <Skeleton className="h-4 w-5/6 bg-white/10" />
+                  <Skeleton className="h-4 w-4/6 bg-white/10" />
+                </div>
+              ) : (
+                <p className="text-xl leading-relaxed text-[#F4F4F0]">
+                  {forecastNarrative ||
+                    'Mulai kumpulkan data transaksi agar Cuan AI bisa memprediksi masa depan keuanganmu dengan akurat.'}
+                </p>
+              )}
               <div className="flex flex-wrap gap-3 mt-8">
                 <Link href="/budgeting">
                   <button className="bg-[#2A2A2A] text-[#F4F4F0] px-6 py-2 rounded-full text-sm font-bold border border-white/10 hover:bg-[#BCFF4F] hover:text-[#0A0A0A] transition-all">
-                    Atur Limit Makan
+                    Atur Budget Kategori
                   </button>
                 </Link>
-                <button className="bg-[#2A2A2A] text-[#F4F4F0] px-6 py-2 rounded-full text-sm font-bold border border-white/10 hover:bg-[#BCFF4F] hover:text-[#0A0A0A] transition-all">
-                  Lihat Detail Weekend
-                </button>
-                <button className="bg-[#2A2A2A] text-[#F4F4F0] px-6 py-2 rounded-full text-sm font-bold border border-white/10 hover:bg-[#BCFF4F] hover:text-[#0A0A0A] transition-all">
-                  Export Report
-                </button>
+                <Link href="/transactions">
+                  <button className="bg-[#2A2A2A] text-[#F4F4F0] px-6 py-2 rounded-full text-sm font-bold border border-white/10 hover:bg-[#BCFF4F] hover:text-[#0A0A0A] transition-all">
+                    Lihat Semua Transaksi
+                  </button>
+                </Link>
               </div>
             </div>
             <div className="bg-[#0A0A0A] rounded-lg p-6 border border-white/5 space-y-6">
               <div className="flex items-center gap-4">
-                <div className="text-4xl font-[900] text-[#BCFF4F]">88%</div>
+                <div className="text-4xl font-[900] text-[#BCFF4F]">
+                  {(trend?.filter(t => t.expense > 0).length ?? 0) >= 4 ? '88%' :
+                    `${Math.min((trend?.filter(t => t.expense > 0).length ?? 0) * 22, 88)}%`}
+                </div>
                 <div className="text-[10px] font-bold uppercase tracking-widest text-[#888888]">
                   Akurasi Prediksi AI
                 </div>
               </div>
               <div className="h-1 bg-white/5 w-full rounded-full overflow-hidden">
-                <div className="h-full bg-[#BCFF4F] w-[88%]" />
+                <div
+                  className="h-full bg-[#BCFF4F] transition-all"
+                  style={{
+                    width: `${(trend?.filter(t => t.expense > 0).length ?? 0) >= 4 ? 88 :
+                      Math.min((trend?.filter(t => t.expense > 0).length ?? 0) * 22, 88)}%`
+                  }}
+                />
               </div>
               <p className="text-xs text-[#888888] leading-tight">
-                Semakin banyak transaksi yang kamu catat, semakin tajam prediksi Cuan AI
-                membantumu berhemat.
+                Semakin banyak transaksi yang kamu catat, semakin tajam prediksi Cuan AI membantumu berhemat.
               </p>
             </div>
           </div>
