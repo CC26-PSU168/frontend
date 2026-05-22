@@ -1,13 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import LogoImage from '@/components/common/LogoImage';
 import { useAuthStore } from '@/store/authStore';
 import { useNotifications, useMarkNotificationAsRead, useMarkAllNotificationsAsRead, useDeleteNotification, Notification } from '@/hooks/useNotifications';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { useUIStore } from '@/store/uiStore';
+import { findSearchMatch, smoothScrollToSection } from '@/lib/searchConfig';
 
 const NOTIF_ICON_MAP: Record<string, { icon: string; color: string }> = {
   BUDGET_ALERT: { icon: 'warning', color: 'text-red-500' },
@@ -25,6 +28,9 @@ export default function TopBar() {
   const markAllAsRead = useMarkAllNotificationsAsRead();
   const deleteNotif = useDeleteNotification();
   const { toggleMobileMenu, toggleDesktopSidebar, isDesktopSidebarOpen } = useUIStore();
+  
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const notifications = notifData?.notifications || [];
   const unreadCount = notifData?.unreadCount || 0;
@@ -32,6 +38,35 @@ export default function TopBar() {
   const handleNotificationClick = (n: Notification) => {
     if (!n.isRead) {
       markAsRead.mutate(n.id);
+    }
+  };
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const trimmedQuery = searchQuery.trim();
+    
+    if (!trimmedQuery) {
+      console.log('Search: Empty query, skipping');
+      return;
+    }
+
+    console.log('Search: Looking for:', trimmedQuery);
+    const match = findSearchMatch(trimmedQuery);
+
+    if (match) {
+      console.log('Search: Found match:', match);
+      // Navigate to the matched route
+      router.push(match.route);
+
+      // If there's a specific section, scroll to it after navigation
+      if (match.section) {
+        console.log('Search: Scrolling to section:', match.section);
+        smoothScrollToSection(match.section);
+      }
+
+      setSearchQuery('');
+    } else {
+      console.log('Search: No match found for:', trimmedQuery);
     }
   };
 
@@ -46,6 +81,7 @@ export default function TopBar() {
       <button 
         onClick={toggleMobileMenu}
         className="lg:hidden p-2 text-[#F4F4F0] hover:text-[#BCFF4F] transition-colors"
+        suppressHydrationWarning
       >
         <span className="material-symbols-outlined">menu</span>
       </button>
@@ -60,39 +96,37 @@ export default function TopBar() {
       <button 
         onClick={toggleDesktopSidebar}
         className="hidden lg:block p-2 text-[#F4F4F0] hover:text-[#BCFF4F] transition-colors mr-2"
+        suppressHydrationWarning
       >
         <span className="material-symbols-outlined">{isDesktopSidebarOpen ? 'menu_open' : 'menu'}</span>
       </button>
 
       {/* Search Bar */}
-      <div className="hidden md:flex items-center gap-4 bg-[#141414] px-6 py-2 rounded-full border border-white/5 flex-1 max-w-md">
-        <span className="material-symbols-outlined text-[#888888]">search</span>
+      <form onSubmit={handleSearch} className="hidden md:flex items-center gap-3 bg-[#141414] px-6 py-2.5 rounded-full border border-white/5 flex-1 max-w-md focus-within:border-[#BCFF4F]/50 hover:border-white/10 transition-all duration-300">
+        <button 
+          type="submit" 
+          className="material-symbols-outlined text-[#888888] hover:text-[#BCFF4F] transition-colors text-base cursor-pointer active:scale-95"
+          aria-label="Search"
+          suppressHydrationWarning
+        >
+          search
+        </button>
         <input
-          className="bg-transparent border-none focus:ring-0 focus:outline-none text-sm font-bold text-[#F4F4F0] w-64 placeholder:text-[#888888]"
-          placeholder="Search..."
+          className="bg-transparent border-none focus:ring-0 focus:outline-none text-sm font-medium text-[#F4F4F0] w-full placeholder:text-[#666666] cursor-text"
+          placeholder="Cari menu, fitur, atau topik..."
           type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          autoComplete="off"
+          suppressHydrationWarning
         />
-      </div>
+      </form>
 
       {/* Right side */}
       <div className="flex items-center gap-3 md:gap-6 ml-auto">
-        <Link
-          href="#"
-          className="hidden md:block text-[#F4F4F0] hover:text-[#BCFF4F] transition-all font-bold text-sm uppercase tracking-widest"
-        >
-          Support
-        </Link>
-
-        <div className="hidden md:block h-8 w-[1px] bg-white/10" />
-
-        <button className="hidden sm:flex items-center gap-2 bg-[#BCFF4F] text-[#0A0A0A] px-4 md:px-6 py-2 rounded-full font-bold text-sm active:scale-95 transition-transform">
-          <span className="material-symbols-outlined text-sm">add</span>
-          <span className="hidden md:inline">Add Funds</span>
-        </button>
-
         {/* Notifications */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="focus:outline-none">
+          <DropdownMenuTrigger className="focus:outline-none" suppressHydrationWarning>
             <div className="relative cursor-pointer">
               <span className="material-symbols-outlined text-[#F4F4F0] hover:text-[#BCFF4F] transition-colors">
                 notifications
@@ -116,6 +150,7 @@ export default function TopBar() {
                 <button 
                   onClick={() => markAllAsRead.mutate()}
                   className="text-xs text-[#BCFF4F] hover:underline font-bold"
+                  suppressHydrationWarning
                 >
                   Tandai semua dibaca
                 </button>
@@ -150,6 +185,7 @@ export default function TopBar() {
                     <button 
                       onClick={(e) => { e.stopPropagation(); deleteNotif.mutate(n.id); }}
                       className="text-[#888888] hover:text-red-500 transition-colors shrink-0 opacity-0 group-hover:opacity-100 self-center"
+                      suppressHydrationWarning
                     >
                       <span className="material-symbols-outlined text-sm">close</span>
                     </button>
@@ -164,6 +200,7 @@ export default function TopBar() {
         <Link href="/profile">
           <div className="w-10 h-10 rounded-full border-2 border-[#BCFF4F] bg-[#2A2A2A] flex items-center justify-center overflow-hidden">
             {user?.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={user.avatarUrl}
                 alt={user.name}
