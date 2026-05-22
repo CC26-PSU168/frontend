@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import AppLayout from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import TransactionFilter from '@/components/transactions/TransactionFilter';
 import TransactionList from '@/components/transactions/TransactionList';
 import AddTransactionModal from '@/components/transactions/AddTransactionModal';
+import SearchableSection from '@/components/common/SearchableSection';
 import { useTransactions, useTransactionSummary, useCreateTransaction, useUpdateTransaction, useDeleteTransaction } from '@/hooks/useTransactions';
 import { formatIDR } from '@/lib/formatters';
 import { toast } from 'sonner';
@@ -14,14 +16,25 @@ import type { TransactionFormData } from '@/validators/transactionSchema';
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
-export default function TransactionsPage() {
+function TransactionsContent() {
+  const searchParams = useSearchParams();
+  const search = searchParams.get('search') || undefined;
+
   const now = new Date();
   const [filters, setFilters] = useState<TransactionFilters>({
     month: now.getMonth() + 1,
     year: now.getFullYear(),
     page: 1,
     limit: 20,
+    search: search,
   });
+  
+  useEffect(() => {
+    if (search !== undefined) {
+      setFilters(prev => ({ ...prev, search, page: 1 }));
+    }
+  }, [search]);
+
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTx, setEditingTx] = useState<Transaction | null>(null);
 
@@ -164,11 +177,29 @@ export default function TransactionsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left: Transactions List (8 cols) */}
         <div className="lg:col-span-8 space-y-8 order-2 lg:order-1">
-          <TransactionList
-            transactions={data?.transactions || []}
-            isLoading={isLoading}
-            onItemClick={handleItemClick}
-          />
+          <SearchableSection
+            id="income-section"
+            title="Pemasukan"
+            subtitle="Daftar semua transaksi pemasukan Anda"
+          >
+            <TransactionList
+              transactions={data?.transactions?.filter(t => t.type === 'INCOME') || []}
+              isLoading={isLoading}
+              onItemClick={handleItemClick}
+            />
+          </SearchableSection>
+
+          <SearchableSection
+            id="expense-section"
+            title="Pengeluaran"
+            subtitle="Daftar semua transaksi pengeluaran Anda"
+          >
+            <TransactionList
+              transactions={data?.transactions?.filter(t => t.type === 'EXPENSE') || []}
+              isLoading={isLoading}
+              onItemClick={handleItemClick}
+            />
+          </SearchableSection>
 
           {/* Pagination */}
           {totalPages > 1 && (
@@ -249,5 +280,13 @@ export default function TransactionsPage() {
         isDeleting={deleteMutation.isPending}
       />
     </AppLayout>
+  );
+}
+
+export default function TransactionsPage() {
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center"><div className="w-12 h-12 border-4 border-[#BCFF4F] border-t-transparent rounded-full animate-spin"></div></div>}>
+      <TransactionsContent />
+    </Suspense>
   );
 }
