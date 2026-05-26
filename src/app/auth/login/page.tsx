@@ -325,7 +325,7 @@ export default function LoginPage() {
               Masuk<span style={{ color: '#C8FF5A' }}>.</span>
             </h2>
             <p className="mt-2.5 text-sm leading-relaxed" style={{ color: '#555' }}>
-              Selamat datang kembali, Sobat Cuan!
+              Selamat datang kembali, Sobat BudgetLy!
             </p>
           </div>
 

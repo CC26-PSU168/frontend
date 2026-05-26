@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import AppLayout from '@/components/layout/AppLayout';
+import SearchableSection from '@/components/common/SearchableSection';
 import { useAiNarrative } from '@/hooks/useAiInsights';
 import { useMonthlyTrend, useCategoryBreakdown, useTransactionSummary } from '@/hooks/useTransactions';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -50,7 +51,12 @@ export default function FinancialHealthPage() {
         </section>
 
         {/* Hero Chart — Dynamic Monthly Bar Chart */}
-        <section className="bg-[#141414] rounded-lg p-8 relative overflow-hidden border border-[#BCFF4F]/5">
+        <SearchableSection
+          id="health-score"
+          title="Skor Kesehatan Keuangan"
+          subtitle="Analisis pengeluaran dan pemasukan bulananmu"
+        >
+          <section className="bg-[#141414] rounded-lg p-8 relative overflow-hidden border border-[#BCFF4F]/5">
           <div className="flex justify-between items-start mb-8">
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-[#888888] font-[900]">
@@ -195,14 +201,20 @@ export default function FinancialHealthPage() {
             </div>
           )}
         </section>
+        </SearchableSection>
 
         {/* AI Forecast Summary */}
-        <section className="bg-[#141414] rounded-lg p-10 border-l-4 border-[#BCFF4F]">
+        <SearchableSection
+          id="health-analysis"
+          title="Analisis & Prediksi"
+          subtitle="Insight dari Cuan AI untuk meningkatkan kesehatan finansialmu"
+        >
+          <section className="bg-[#141414] rounded-lg p-10 border-l-4 border-[#BCFF4F]">
           <div className="flex items-center gap-4 mb-6">
             <div className="bg-[#BCFF4F] p-2 rounded-full">
               <span className="material-symbols-outlined text-[#0A0A0A]">psychology</span>
             </div>
-            <h3 className="text-2xl font-[900]">Cuan AI Insight</h3>
+            <h3 className="text-2xl font-[900]">BudgetLy AI Insight</h3>
           </div>
           <div className="grid md:grid-cols-3 gap-12">
             <div className="md:col-span-2">
@@ -256,6 +268,7 @@ export default function FinancialHealthPage() {
             </div>
           </div>
         </section>
+        </SearchableSection>
       </div>
     </AppLayout>
   );
