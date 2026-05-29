@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import LogoImage from '@/components/common/LogoImage';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -184,13 +185,8 @@ export default function LoginPage() {
 
           {/* Logo */}
           <div ref={logoRef} className="flex items-center gap-3">
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center"
-              style={{ background: '#C8FF5A' }}
-            >
-              <span className="material-symbols-outlined text-black text-[18px]">
-                account_balance_wallet
-              </span>
+            <div className="w-14 h-14 rounded-full flex items-center justify-center">
+              <LogoImage className="w-12 h-12 rounded-full object-cover" />
             </div>
             <span
               className="text-[1.1rem] font-black tracking-[-0.04em] text-white"
@@ -305,13 +301,8 @@ export default function LoginPage() {
 
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center gap-2.5 mb-10 fi fi-1">
-            <div
-              className="w-8 h-8 rounded-xl flex items-center justify-center"
-              style={{ background: '#C8FF5A' }}
-            >
-              <span className="material-symbols-outlined text-black text-[17px]">
-                account_balance_wallet
-              </span>
+            <div className="w-10 h-10 rounded-full flex items-center justify-center">
+              <LogoImage className="w-8 h-8 rounded-full object-cover" />
             </div>
             <span className="text-base font-black tracking-[-0.04em] text-white">Budgetly</span>
           </div>
