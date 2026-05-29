@@ -33,10 +33,10 @@ export default function LandingNavbar({ activeSection }: LandingNavbarProps) {
           </span>
         </div>
         <div className="hidden md:flex gap-8 items-center">
-          <a onClick={(e) => handleScroll(e, 'features')} className={cursor-pointer transition-colors duration-300 uppercase text-xs tracking-widest }>Fitur</a>
-          <a onClick={(e) => handleScroll(e, 'edukasi')} className={cursor-pointer transition-colors duration-300 uppercase text-xs tracking-widest }>Edukasi</a>
-          <a onClick={(e) => handleScroll(e, 'komunitas')} className={cursor-pointer transition-colors duration-300 uppercase text-xs tracking-widest }>Komunitas</a>
-          <a onClick={(e) => handleScroll(e, 'bantuan')} className={cursor-pointer transition-colors duration-300 uppercase text-xs tracking-widest }>Bantuan</a>
+          <a onClick={(e) => handleScroll(e, 'features')} className={`cursor-pointer transition-colors duration-300 uppercase text-xs tracking-widest ${activeSection === 'fitur' || activeSection === 'features' ? 'text-[#BCFF4F] font-bold border-b-2 border-[#BCFF4F] pb-1' : 'text-[#888888] font-medium hover:text-[#BCFF4F]'}`}>Fitur</a>
+          <a onClick={(e) => handleScroll(e, 'edukasi')} className={`cursor-pointer transition-colors duration-300 uppercase text-xs tracking-widest ${activeSection === 'edukasi' ? 'text-[#BCFF4F] font-bold border-b-2 border-[#BCFF4F] pb-1' : 'text-[#888888] font-medium hover:text-[#BCFF4F]'}`}>Edukasi</a>
+          <a onClick={(e) => handleScroll(e, 'komunitas')} className={`cursor-pointer transition-colors duration-300 uppercase text-xs tracking-widest ${activeSection === 'komunitas' ? 'text-[#BCFF4F] font-bold border-b-2 border-[#BCFF4F] pb-1' : 'text-[#888888] font-medium hover:text-[#BCFF4F]'}`}>Komunitas</a>
+          <a onClick={(e) => handleScroll(e, 'bantuan')} className={`cursor-pointer transition-colors duration-300 uppercase text-xs tracking-widest ${activeSection === 'bantuan' ? 'text-[#BCFF4F] font-bold border-b-2 border-[#BCFF4F] pb-1' : 'text-[#888888] font-medium hover:text-[#BCFF4F]'}`}>Bantuan</a>
         </div>
         <Link href="/auth/register" className="bg-[#BCFF4F] text-[#0A0A0A] px-6 py-2 rounded-full font-bold text-sm hover:scale-105 active:scale-95 transition-all shadow-[0_0_15px_rgba(188,255,79,0.3)] uppercase">
           Mulai Gratis
