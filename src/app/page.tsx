@@ -40,7 +40,7 @@ export default function LandingPage() {
   }, [activeSection]);
 
   useEffect(() => {
-    const sectionIds = ['fitur', 'features', 'edukasi', 'komunitas'];
+    const sectionIds = ['fitur', 'features', 'edukasi', 'komunitas', 'bantuan'];
     const observers: IntersectionObserver[] = [];
 
     sectionIds.forEach((id) => {
@@ -943,7 +943,7 @@ export default function LandingPage() {
       </main>
 
       {/* ===== Footer ===== */}
-      <footer className="bg-[#0A0A0A] w-full py-12 border-t border-[#BCFF4F]/15 relative z-10">
+      <footer id="bantuan" className="bg-[#0A0A0A] w-full py-12 border-t border-[#BCFF4F]/15 relative z-10">
         <div className="flex flex-col items-center gap-8 w-full px-8">
           <div className="flex items-center gap-4 transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
             <LogoImage className="w-20 h-20 rounded-full object-cover" />

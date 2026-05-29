@@ -7,6 +7,7 @@ import { useScheduledPayments, useCreateScheduledPayment, useDeleteScheduledPaym
 import { formatIDR } from '@/lib/formatters';
 import { TRANSACTION_CATEGORIES } from '@/lib/constants';
 import { Skeleton } from '@/components/ui/skeleton';
+import SearchableSection from '@/components/common/SearchableSection';
 import { toast } from 'sonner';
 
 const MONTH_NAMES = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -154,6 +155,7 @@ export default function BudgetingPage() {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
           <div className="flex bg-[#141414] p-1 rounded-full overflow-x-auto w-full sm:w-auto shrink-0">
             <button
+              suppressHydrationWarning
               onClick={() => setActiveTab('budget')}
               className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
                 activeTab === 'budget' ? 'bg-[#BCFF4F] text-[#0A0A0A]' : 'text-[#888888] hover:text-white'
@@ -162,6 +164,7 @@ export default function BudgetingPage() {
               Budget
             </button>
             <button
+              suppressHydrationWarning
               onClick={() => setActiveTab('calendar')}
               className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
                 activeTab === 'calendar' ? 'bg-[#BCFF4F] text-[#0A0A0A]' : 'text-[#888888] hover:text-white'
@@ -171,6 +174,7 @@ export default function BudgetingPage() {
             </button>
           </div>
           <button
+            suppressHydrationWarning
             onClick={() => setShowAddModal(true)}
             className="bg-[#BCFF4F] text-[#0A0A0A] px-6 py-3 md:py-4 h-auto rounded-full font-black text-sm flex items-center justify-center gap-2 hover:scale-95 transition-transform whitespace-nowrap w-full sm:w-auto"
           >
@@ -218,190 +222,210 @@ export default function BudgetingPage() {
           </div>
 
           {/* Bento Category Grid */}
-          {overview?.categories && overview.categories.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {overview.categories.map((budget, index) => {
-                const isOverbudget = budget.percentage >= 100;
-                const isFirstOrFull = index === 0 || overview.categories.length <= 2;
+          <SearchableSection
+            id="budget-categories"
+            title="Kategori Budget"
+            subtitle="Kelola alokasi budget untuk setiap kategori"
+          >
+            {overview?.categories && overview.categories.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {overview.categories.map((budget, index) => {
+                  const isOverbudget = budget.percentage >= 100;
+                  const isFirstOrFull = index === 0 || overview.categories.length <= 2;
 
-                if (isOverbudget) {
-                  // White card for overbudget
-                  return (
-                    <div
-                      key={budget.id}
-                      className="md:col-span-1 bg-white rounded-[2rem] p-10 flex flex-col justify-between min-h-[340px] relative group"
-                    >
-                      <button onClick={() => handleDeleteBudget(budget.id)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-[#0A0A0A]/40 hover:text-red-500">
-                        <span className="material-symbols-outlined text-sm">delete</span>
-                      </button>
-                      <div>
-                        <div className="flex justify-between items-start">
-                          <span className="material-symbols-outlined text-[#0A0A0A] text-3xl">{getCategoryIcon(budget.category)}</span>
-                          <span className="bg-[#0A0A0A] text-white text-[10px] font-black px-3 py-1 rounded-full uppercase">
-                            OVERBUDGET
-                          </span>
-                        </div>
-                        <h4 className="text-2xl font-[900] text-[#0A0A0A] mt-6">{budget.category}</h4>
-                      </div>
-                      <div>
-                        <div className="text-4xl font-[900] text-[#0A0A0A] leading-tight">{formatIDR(budget.spent)}</div>
-                        <p className="text-red-600 font-black text-[10px] uppercase mt-1 tracking-tighter">
-                          +{formatIDR(budget.spent - budget.limitAmount)} dari limit
-                        </p>
-                      </div>
-                    </div>
-                  );
-                }
-
-                // Full-width dark card for first item
-                if (isFirstOrFull) {
-                  return (
-                    <div
-                      key={budget.id}
-                      className="md:col-span-3 bg-[#141414] rounded-[2rem] p-10 border border-[#BCFF4F]/15 flex flex-col md:flex-row justify-between items-center group hover:bg-[#1C1B1B] transition-all relative"
-                    >
-                      <button onClick={() => handleDeleteBudget(budget.id)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-[#888888] hover:text-red-400">
-                        <span className="material-symbols-outlined text-sm">delete</span>
-                      </button>
-                      <div className="flex items-center gap-8">
-                        <div className="w-20 h-20 rounded-full bg-[#BCFF4F]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <span className="material-symbols-outlined text-[#BCFF4F] text-4xl">{getCategoryIcon(budget.category)}</span>
+                  if (isOverbudget) {
+                    // White card for overbudget
+                    return (
+                      <div
+                        key={budget.id}
+                        className="md:col-span-1 bg-white rounded-[2rem] p-10 flex flex-col justify-between min-h-[340px] relative group"
+                      >
+                        <button suppressHydrationWarning onClick={() => handleDeleteBudget(budget.id)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-[#0A0A0A]/40 hover:text-red-500">
+                          <span className="material-symbols-outlined text-sm">delete</span>
+                        </button>
+                        <div>
+                          <div className="flex justify-between items-start">
+                            <span className="material-symbols-outlined text-[#0A0A0A] text-3xl">{getCategoryIcon(budget.category)}</span>
+                            <span className="bg-[#0A0A0A] text-white text-[10px] font-black px-3 py-1 rounded-full uppercase">
+                              OVERBUDGET
+                            </span>
+                          </div>
+                          <h4 className="text-2xl font-[900] text-[#0A0A0A] mt-6">{budget.category}</h4>
                         </div>
                         <div>
-                          <h4 className="text-3xl font-[900] text-white">{budget.category}</h4>
-                          <p className="text-[#888888] font-bold mt-1">{budget.percentage}% terpakai</p>
+                          <div className="text-4xl font-[900] text-[#0A0A0A] leading-tight">{formatIDR(budget.spent)}</div>
+                          <p className="text-red-600 font-black text-[10px] uppercase mt-1 tracking-tighter">
+                            +{formatIDR(budget.spent - budget.limitAmount)} dari limit
+                          </p>
                         </div>
                       </div>
-                      <div className="text-right mt-6 md:mt-0">
-                        <div className="text-4xl font-[900] text-[#BCFF4F]">{formatIDR(budget.spent)}</div>
-                        <div className="text-[10px] font-black uppercase tracking-widest text-[#888888] mt-1">
-                          Target: {formatIDR(budget.limitAmount)}
+                    );
+                  }
+
+                  // Full-width dark card for first item
+                  if (isFirstOrFull) {
+                    return (
+                      <div
+                        key={budget.id}
+                        className="md:col-span-3 bg-[#141414] rounded-[2rem] p-10 border border-[#BCFF4F]/15 flex flex-col md:flex-row justify-between items-center group hover:bg-[#1C1B1B] transition-all relative"
+                      >
+                        <button suppressHydrationWarning onClick={() => handleDeleteBudget(budget.id)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-[#888888] hover:text-red-400">
+                          <span className="material-symbols-outlined text-sm">delete</span>
+                        </button>
+                        <div className="flex items-center gap-8">
+                          <div className="w-20 h-20 rounded-full bg-[#BCFF4F]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <span className="material-symbols-outlined text-[#BCFF4F] text-4xl">{getCategoryIcon(budget.category)}</span>
+                          </div>
+                          <div>
+                            <h4 className="text-3xl font-[900] text-white">{budget.category}</h4>
+                            <p className="text-[#888888] font-bold mt-1">{budget.percentage}% terpakai</p>
+                          </div>
+                        </div>
+                        <div className="text-right mt-6 md:mt-0">
+                          <div className="text-4xl font-[900] text-[#BCFF4F]">{formatIDR(budget.spent)}</div>
+                          <div className="text-[10px] font-black uppercase tracking-widest text-[#888888] mt-1">
+                            Target: {formatIDR(budget.limitAmount)}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // Standard dark card
+                  return (
+                    <div
+                      key={budget.id}
+                      className={`${index % 3 === 1 ? 'md:col-span-1' : 'md:col-span-2'} bg-[#141414] rounded-[2rem] p-10 border border-[#BCFF4F]/15 flex flex-col justify-between min-h-[280px] group relative`}
+                    >
+                      <button suppressHydrationWarning onClick={() => handleDeleteBudget(budget.id)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-[#888888] hover:text-red-400">
+                        <span className="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                      <div className="flex justify-between">
+                        <div>
+                          <span className="material-symbols-outlined text-[#BCFF4F] text-3xl">{getCategoryIcon(budget.category)}</span>
+                          <h4 className="text-3xl font-[900] text-white mt-6">{budget.category}</h4>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-[11px] font-black text-[#888888] uppercase tracking-widest mb-1">PROGRESS</div>
+                          <div className="text-2xl font-[900] text-[#BCFF4F]">{budget.percentage}%</div>
+                        </div>
+                      </div>
+                      <div className="flex items-end justify-between">
+                        <div>
+                          <div className="text-4xl font-[900] text-white">{formatIDR(budget.spent)}</div>
+                          <p className="text-[#888888] font-bold text-xs mt-1">Sisa: {formatIDR(budget.remaining)}</p>
                         </div>
                       </div>
                     </div>
                   );
-                }
-
-                // Standard dark card
-                return (
-                  <div
-                    key={budget.id}
-                    className={`${index % 3 === 1 ? 'md:col-span-1' : 'md:col-span-2'} bg-[#141414] rounded-[2rem] p-10 border border-[#BCFF4F]/15 flex flex-col justify-between min-h-[280px] group relative`}
-                  >
-                    <button onClick={() => handleDeleteBudget(budget.id)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-[#888888] hover:text-red-400">
-                      <span className="material-symbols-outlined text-sm">delete</span>
-                    </button>
-                    <div className="flex justify-between">
-                      <div>
-                        <span className="material-symbols-outlined text-[#BCFF4F] text-3xl">{getCategoryIcon(budget.category)}</span>
-                        <h4 className="text-3xl font-[900] text-white mt-6">{budget.category}</h4>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-[11px] font-black text-[#888888] uppercase tracking-widest mb-1">PROGRESS</div>
-                        <div className="text-2xl font-[900] text-[#BCFF4F]">{budget.percentage}%</div>
-                      </div>
-                    </div>
-                    <div className="flex items-end justify-between">
-                      <div>
-                        <div className="text-4xl font-[900] text-white">{formatIDR(budget.spent)}</div>
-                        <p className="text-[#888888] font-bold text-xs mt-1">Sisa: {formatIDR(budget.remaining)}</p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="bg-[#141414] rounded-[2rem] p-16 flex flex-col items-center justify-center text-center border border-[#BCFF4F]/15">
-              <span className="material-symbols-outlined text-[#888888] text-6xl mb-4">account_balance_wallet</span>
-              <h4 className="text-2xl font-[900] text-white mb-2">Belum Ada Budget</h4>
-              <p className="text-[#888888] mb-8">Mulai atur anggaran bulananmu dengan menambah kategori budget.</p>
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="bg-[#BCFF4F] text-[#0A0A0A] px-8 py-4 rounded-full font-black"
-              >
-                Tambah Budget Pertama
-              </button>
-            </div>
-          )}
+                })}
+              </div>
+            ) : (
+              <div className="bg-[#141414] rounded-[2rem] p-16 flex flex-col items-center justify-center text-center border border-[#BCFF4F]/15">
+                <span className="material-symbols-outlined text-[#888888] text-6xl mb-4">account_balance_wallet</span>
+                <h4 className="text-2xl font-[900] text-white mb-2">Belum Ada Budget</h4>
+                <p className="text-[#888888] mb-8">Mulai atur anggaran bulananmu dengan menambah kategori budget.</p>
+                <button
+                  suppressHydrationWarning
+                  onClick={() => setShowAddModal(true)}
+                  className="bg-[#BCFF4F] text-[#0A0A0A] px-8 py-4 rounded-full font-black"
+                >
+                  Tambah Budget Pertama
+                </button>
+              </div>
+            )}
+          </SearchableSection>
         </div>
       )}
 
       {/* Calendar Tab */}
       {activeTab === 'calendar' && (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="lg:col-span-3 bg-[#141414] rounded-[2rem] p-8 border border-[#BCFF4F]/15 overflow-hidden relative">
-            <div className="flex justify-between items-center mb-8">
-              <h3 className="text-3xl font-[900] text-white">{MONTH_NAMES[month - 1]} {year}</h3>
-              <button
-                onClick={() => setShowAddPaymentModal(true)}
-                className="bg-[#1C1B1B] text-[#BCFF4F] px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-[#2A2A2A] transition-colors"
-              >
-                <span className="material-symbols-outlined text-sm">add</span> Tambah Tagihan
-              </button>
-            </div>
-            <div className="grid grid-cols-7 gap-px bg-[#BCFF4F]/5 rounded-xl overflow-hidden">
-              {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((d) => (
-                <div key={d} className="bg-[#1C1B1B] p-4 text-center text-[10px] font-black text-[#888888] uppercase tracking-widest">
-                  {d}
-                </div>
-              ))}
-              {calendarDays.map((day, i) => {
-                const dayPayments = day ? scheduledPayments?.filter(p => p.dueDay === day) || [] : [];
-                return (
-                  <div
-                    key={i}
-                    className={`bg-[#141414] min-h-[100px] p-3 text-sm font-bold flex flex-col gap-1 ${
-                      day ? 'text-white' : 'text-[#333]'
-                    } ${day === now.getDate() ? 'ring-1 ring-inset ring-[#BCFF4F] bg-[#1C1B1B]' : ''}`}
-                  >
-                    <span>{day || ''}</span>
-                    {dayPayments.map((p) => (
-                      <div key={p.id} className="text-[10px] bg-[#BCFF4F]/10 text-[#BCFF4F] px-2 py-1 rounded truncate flex items-center gap-1 group relative">
-                        <span className="material-symbols-outlined text-[10px]">{getCategoryIcon(p.category)}</span>
-                        {p.name}
-                        <button onClick={(e) => { e.stopPropagation(); handleDeletePayment(p.id); }} className="absolute right-1 opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-500">
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          <div className="lg:col-span-1 bg-[#141414] rounded-[2rem] p-8 border border-[#BCFF4F]/15 flex flex-col">
-            <h5 className="text-white font-[900] uppercase text-[11px] tracking-widest mb-6">Daftar Tagihan</h5>
-            {scheduledPayments && scheduledPayments.length > 0 ? (
-              <div className="space-y-4 overflow-y-auto pr-2">
-                {scheduledPayments.map(p => (
-                  <div key={p.id} className="bg-[#1C1B1B] p-4 rounded-xl border border-white/5 relative group">
-                    <button onClick={() => handleDeletePayment(p.id)} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-[#888888] hover:text-red-400">
-                      <span className="material-symbols-outlined text-xs">delete</span>
-                    </button>
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-[#BCFF4F] text-sm">{getCategoryIcon(p.category)}</span>
-                        <span className="font-bold text-white text-sm">{p.name}</span>
-                      </div>
-                    </div>
-                    <div className="text-[#BCFF4F] font-black">{formatIDR(p.amount)}</div>
-                    <div className="text-[#888888] text-[10px] font-bold uppercase tracking-widest mt-2">Tiap Tgl {p.dueDay}</div>
-                    <button
-                      onClick={() => handleMarkPaid(p.id)}
-                      disabled={markPaidMutation.isPending}
-                      className="w-full mt-3 bg-[#BCFF4F]/10 text-[#BCFF4F] py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-[#BCFF4F] hover:text-[#0A0A0A] transition-all disabled:opacity-50"
-                    >
-                      ✓ Tandai Lunas
-                    </button>
+        <SearchableSection
+          id="budget-report"
+          title="Kalender Tagihan"
+          subtitle="Pantau jadwal pembayaran dan tagihan bulananmu"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Calendar Grid */}
+            <div className="lg:col-span-3 bg-[#141414] rounded-[2rem] p-8 border border-[#BCFF4F]/15 overflow-hidden relative">
+              <div className="flex justify-between items-center mb-8">
+                <h3 className="text-3xl font-[900] text-white">{MONTH_NAMES[month - 1]} {year}</h3>
+                <button
+                  suppressHydrationWarning
+                  onClick={() => setShowAddPaymentModal(true)}
+                  className="bg-[#1C1B1B] text-[#BCFF4F] px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-[#2A2A2A] transition-colors"
+                >
+                  <span className="material-symbols-outlined text-sm">add</span> Tambah Tagihan
+                </button>
+              </div>
+              <div className="grid grid-cols-7 gap-px bg-[#1C1B1B] rounded-xl overflow-hidden mb-px">
+                {['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'].map((d) => (
+                  <div key={d} className="bg-[#1C1B1B] p-4 text-center text-[10px] font-black text-[#888888] uppercase tracking-widest">
+                    {d}
                   </div>
                 ))}
               </div>
-            ) : (
-              <p className="text-[#888888] text-sm italic">Belum ada tagihan terjadwal. Tambahkan tagihan seperti uang kos atau internet bulanan.</p>
-            )}
+              <div className="grid grid-cols-7 gap-px bg-[#1C1B1B] rounded-xl overflow-hidden">
+                {calendarDays.map((day, i) => {
+                  const dayPayments = day ? scheduledPayments?.filter(p => p.dueDay === day) || [] : [];
+                  return (
+                    <div
+                      key={i}
+                      className={`bg-[#141414] min-h-[100px] p-3 text-sm font-bold flex flex-col gap-1 ${
+                        day ? 'text-white' : 'text-[#333]'
+                      } ${day === now.getDate() ? 'ring-1 ring-inset ring-[#BCFF4F] bg-[#1C1B1B]' : ''}`}
+                    >
+                      <span>{day || ''}</span>
+                      {dayPayments.map((p) => (
+                        <div key={p.id} className="text-[10px] bg-[#BCFF4F]/10 text-[#BCFF4F] px-2 py-1 rounded truncate flex items-center gap-1 group relative">
+                          <span className="material-symbols-outlined text-[10px]">{getCategoryIcon(p.category)}</span>
+                          {p.name}
+                          <button suppressHydrationWarning onClick={(e) => { e.stopPropagation(); handleDeletePayment(p.id); }} className="absolute right-1 opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-500">
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Scheduled Payments List */}
+            <div className="lg:col-span-1 bg-[#141414] rounded-[2rem] p-8 border border-[#BCFF4F]/15 flex flex-col">
+              <h5 className="text-white font-[900] uppercase text-[11px] tracking-widest mb-6">Daftar Tagihan</h5>
+              {scheduledPayments && scheduledPayments.length > 0 ? (
+                <div className="space-y-4 overflow-y-auto pr-2">
+                  {scheduledPayments.map(p => (
+                    <div key={p.id} className="bg-[#1C1B1B] p-4 rounded-xl border border-white/5 relative group">
+                      <button suppressHydrationWarning onClick={() => handleDeletePayment(p.id)} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-[#888888] hover:text-red-400">
+                        <span className="material-symbols-outlined text-xs">delete</span>
+                      </button>
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-[#BCFF4F] text-sm">{getCategoryIcon(p.category)}</span>
+                          <span className="font-bold text-white text-sm">{p.name}</span>
+                        </div>
+                      </div>
+                      <div className="text-[#BCFF4F] font-black">{formatIDR(p.amount)}</div>
+                      <div className="text-[#888888] text-[10px] font-bold uppercase tracking-widest mt-2">Tiap Tgl {p.dueDay}</div>
+                      <button
+                        suppressHydrationWarning
+                        onClick={() => handleMarkPaid(p.id)}
+                        disabled={markPaidMutation.isPending}
+                        className="w-full mt-3 bg-[#BCFF4F]/10 text-[#BCFF4F] py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-[#BCFF4F] hover:text-[#0A0A0A] transition-all disabled:opacity-50"
+                      >
+                        ✓ Tandai Lunas
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[#888888] text-sm italic">Belum ada tagihan terjadwal. Tambahkan tagihan seperti uang kos atau internet bulanan.</p>
+              )}
+            </div>
           </div>
-        </div>
+        </SearchableSection>
       )}
 
       {/* Add Budget Modal */}
@@ -426,6 +450,7 @@ export default function BudgetingPage() {
               <div>
                 <label className="text-[10px] font-black text-[#BCFF4F] uppercase tracking-widest block mb-2">Limit Bulanan</label>
                 <input
+                  suppressHydrationWarning
                   type="number"
                   value={newLimit}
                   onChange={(e) => setNewLimit(e.target.value)}
@@ -435,12 +460,14 @@ export default function BudgetingPage() {
               </div>
               <div className="flex gap-4 pt-4">
                 <button
+                  suppressHydrationWarning
                   onClick={() => setShowAddModal(false)}
                   className="flex-1 border border-[#BCFF4F]/30 text-[#BCFF4F] py-4 rounded-full font-bold hover:bg-[#BCFF4F]/10 transition-all"
                 >
                   Batal
                 </button>
                 <button
+                  suppressHydrationWarning
                   onClick={handleAddBudget}
                   disabled={createMutation.isPending}
                   className="flex-1 bg-[#BCFF4F] text-[#0A0A0A] py-4 rounded-full font-black hover:scale-95 transition-transform disabled:opacity-50"
@@ -452,6 +479,7 @@ export default function BudgetingPage() {
           </div>
         </div>
       )}
+
       {/* Add Scheduled Payment Modal */}
       {showAddPaymentModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center" onClick={() => setShowAddPaymentModal(false)}>
@@ -461,6 +489,7 @@ export default function BudgetingPage() {
               <div>
                 <label className="text-[10px] font-black text-[#BCFF4F] uppercase tracking-widest block mb-2">Nama Tagihan</label>
                 <input
+                  suppressHydrationWarning
                   type="text"
                   value={paymentName}
                   onChange={(e) => setPaymentName(e.target.value)}
@@ -471,6 +500,7 @@ export default function BudgetingPage() {
               <div>
                 <label className="text-[10px] font-black text-[#BCFF4F] uppercase tracking-widest block mb-2">Nominal</label>
                 <input
+                  suppressHydrationWarning
                   type="number"
                   value={paymentAmount}
                   onChange={(e) => setPaymentAmount(e.target.value)}
@@ -495,6 +525,7 @@ export default function BudgetingPage() {
                 <div>
                   <label className="text-[10px] font-black text-[#BCFF4F] uppercase tracking-widest block mb-2">Tanggal Jatuh Tempo</label>
                   <input
+                    suppressHydrationWarning
                     type="number"
                     min="1"
                     max="31"
@@ -507,12 +538,14 @@ export default function BudgetingPage() {
               </div>
               <div className="flex gap-4 pt-4">
                 <button
+                  suppressHydrationWarning
                   onClick={() => setShowAddPaymentModal(false)}
                   className="flex-1 border border-[#BCFF4F]/30 text-[#BCFF4F] py-4 rounded-full font-bold hover:bg-[#BCFF4F]/10 transition-all"
                 >
                   Batal
                 </button>
                 <button
+                  suppressHydrationWarning
                   onClick={handleAddPayment}
                   disabled={createPaymentMutation.isPending}
                   className="flex-1 bg-[#BCFF4F] text-[#0A0A0A] py-4 rounded-full font-black hover:scale-95 transition-transform disabled:opacity-50"

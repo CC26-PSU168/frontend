@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, Suspense } from 'react';
+import { useState, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import AppLayout from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -21,19 +21,14 @@ function TransactionsContent() {
   const search = searchParams.get('search') || undefined;
 
   const now = new Date();
+  // AFTER — no useEffect needed, search is already in the initial state
   const [filters, setFilters] = useState<TransactionFilters>({
     month: now.getMonth() + 1,
     year: now.getFullYear(),
     page: 1,
     limit: 20,
-    search: search,
+    search: search ?? undefined,
   });
-  
-  useEffect(() => {
-    if (search !== undefined) {
-      setFilters(prev => ({ ...prev, search, page: 1 }));
-    }
-  }, [search]);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTx, setEditingTx] = useState<Transaction | null>(null);
@@ -283,10 +278,17 @@ function TransactionsContent() {
   );
 }
 
+// AFTER
+function TransactionsPageInner() {
+  const searchParams = useSearchParams();
+  const search = searchParams.get('search') || '';
+  return <TransactionsContent key={search} />;
+}
+
 export default function TransactionsPage() {
   return (
     <Suspense fallback={<div className="flex h-screen items-center justify-center"><div className="w-12 h-12 border-4 border-[#BCFF4F] border-t-transparent rounded-full animate-spin"></div></div>}>
-      <TransactionsContent />
+      <TransactionsPageInner />
     </Suspense>
   );
 }

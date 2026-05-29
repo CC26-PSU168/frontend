@@ -1,7 +1,6 @@
 'use client';
 
 import AppLayout from '@/components/layout/AppLayout';
-import { useInvestmentPrices } from '@/hooks/useInvestment';
 import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
@@ -15,70 +14,102 @@ const formatIDR = (amount: number) => {
   }).format(amount);
 };
 
-// ── Live gold price (XAU/IDR) ────────────────────────────────────────────────
-// Source 1: gold-api.com  → XAU price in USD (free, no key, CORS ok)
-// Source 2: open.er-api.com → USD/IDR rate   (free, no key, CORS ok)
-function useLiveGoldIDR() {
-  const [goldPerGram, setGoldPerGram] = useState<number | null>(null);
-  const [goldChange, setGoldChange] = useState<number>(0);
+// ── Live prices hook (all public APIs, no backend needed) ────────────────────
+// Gold  : gold-api.com       → XAU/USD   (free, no key, CORS ok)
+// BTC   : api.binance.com    → BTCUSDT   (free, no key, CORS ok)
+// USD   : open.er-api.com    → USD/IDR   (free, no key, CORS ok)
+interface LivePrices {
+  gold: { price: number; change24h: number };
+  bitcoin: { price: number; change24h: number };
+  usd: { price: number; change24h: number };
+  lastUpdated: string;
+}
+
+function useLivePrices() {
+  const [prices, setPrices] = useState<LivePrices | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
-    async function fetchGold() {
+    async function fetchAll() {
       try {
         type GoldApiResponse = {
-          price: number;           // USD per troy-oz
-          price_gram_24k?: number; // USD per gram (24k) — provided directly
-          ch?: number;             // change amount USD
-          chp?: number;            // change percent
+          price: number;
+          price_gram_24k?: number;
+          ch?: number;
+          chp?: number;
         };
         type FxResponse = { rates: Record<string, number> };
+        type BinanceTickerResponse = {
+          symbol: string;
+          priceChange: string;
+          priceChangePercent: string;
+          lastPrice: string;
+        };
 
-        const [goldRes, fxRes] = await Promise.all([
+        const [goldRes, fxRes, btcRes] = await Promise.all([
           fetch('https://api.gold-api.com/price/XAU', { headers: { Accept: 'application/json' } }),
           fetch('https://open.er-api.com/v6/latest/USD'),
+          fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT'),
         ]);
 
         if (!goldRes.ok) throw new Error(`gold-api: ${goldRes.status}`);
         if (!fxRes.ok) throw new Error(`fx: ${fxRes.status}`);
+        if (!btcRes.ok) throw new Error(`binance: ${btcRes.status}`);
 
         const goldData: GoldApiResponse = await goldRes.json();
         const fxData: FxResponse = await fxRes.json();
+        const btcData: BinanceTickerResponse = await btcRes.json();
 
         const usdToIdr = fxData.rates['IDR'] ?? 16000;
 
-        // prefer price_gram_24k if available, else convert from troy-oz (1 troy oz = 31.1035 g)
+        // Gold
         const priceUsdPerGram = goldData.price_gram_24k ?? goldData.price / 31.1035;
-        const priceIdrPerGram = priceUsdPerGram * usdToIdr;
-
-        // derive change percent
-        const changePct =
+        const goldPriceIdr = Math.round(priceUsdPerGram * usdToIdr);
+        const goldChangePct =
           goldData.chp !== undefined
             ? goldData.chp
             : goldData.ch !== undefined && goldData.price > 0
             ? Number(((goldData.ch / (goldData.price - goldData.ch)) * 100).toFixed(2))
             : 0;
 
+        // Bitcoin — Binance gives BTCUSDT, convert to IDR
+        const btcPriceUsd = parseFloat(btcData.lastPrice);
+        const btcPriceIdr = Math.round(btcPriceUsd * usdToIdr);
+        const btcChange = Number(parseFloat(btcData.priceChangePercent).toFixed(2));
+
+        // USD/IDR
+        const usdPriceIdr = Math.round(usdToIdr);
+
         if (!cancelled) {
-          setGoldPerGram(Math.round(priceIdrPerGram));
-          setGoldChange(Number(changePct.toFixed(2)));
+          setPrices({
+            gold: { price: goldPriceIdr, change24h: Number(goldChangePct.toFixed(2)) },
+            bitcoin: { price: btcPriceIdr, change24h: btcChange },
+            usd: { price: usdPriceIdr, change24h: 0 },
+            lastUpdated: new Date().toISOString(),
+          });
           setLoading(false);
         }
       } catch (err) {
-        console.warn('[useLiveGoldIDR] fetch failed, using fallback:', err);
-        if (!cancelled) setLoading(false);
+        console.warn('[useLivePrices] fetch failed:', err);
+        if (!cancelled) {
+          setError(true);
+          setLoading(false);
+        }
       }
     }
 
-    fetchGold();
+    fetchAll();
+    const interval = setInterval(fetchAll, 60000);
     return () => {
       cancelled = true;
+      clearInterval(interval);
     };
   }, []);
 
-  return { goldPerGram, goldChange, loading };
+  return { prices, loading, error };
 }
 
 // ── Investment tips data ─────────────────────────────────────────────────────
@@ -156,20 +187,15 @@ const riskColor = (risk: string) => {
 
 // ── Main page ────────────────────────────────────────────────────────────────
 export default function InvestmentPage() {
-  const { data: prices, isLoading, isError } = useInvestmentPrices();
-  const { goldPerGram, goldChange, loading: goldLoading } = useLiveGoldIDR();
+  const { prices, loading, error } = useLivePrices();
 
-  if (isLoading) {
+  if (loading) {
     return <AppLayout><div className="text-[#F4F4F0] animate-pulse">Memuat data investasi...</div></AppLayout>;
   }
 
-  if (isError || !prices) {
+  if (error || !prices) {
     return <AppLayout><div className="text-red-500 font-bold">Gagal memuat data investasi. Coba lagi nanti.</div></AppLayout>;
   }
-
-  // Use live gold price if available, otherwise fall back to hook data
-  const displayedGoldPrice = goldPerGram ?? prices.gold.price;
-  const displayedGoldChange = goldPerGram ? goldChange : prices.gold.change24h;
 
   return (
     <AppLayout>
@@ -196,18 +222,14 @@ export default function InvestmentPage() {
           <div className="absolute -right-4 -top-4 w-24 h-24 bg-[#FFD700]/10 rounded-full blur-2xl group-hover:bg-[#FFD700]/20 transition-all" />
           <h3 className="text-[#888888] font-black tracking-widest text-[10px] uppercase mb-4">Emas (Gram)</h3>
           <p className="text-3xl font-[900] tracking-tight text-[#F4F4F0]">
-            {goldLoading ? (
-              <span className="animate-pulse text-[#888888]">Memuat...</span>
-            ) : (
-              formatIDR(displayedGoldPrice)
-            )}
+            {formatIDR(prices.gold.price)}
           </p>
-          <div className={`flex items-center gap-1 mt-2 ${displayedGoldChange >= 0 ? 'text-[#BCFF4F]' : 'text-red-500'}`}>
+          <div className={`flex items-center gap-1 mt-2 ${prices.gold.change24h >= 0 ? 'text-[#BCFF4F]' : 'text-red-500'}`}>
             <span className="material-symbols-outlined text-sm">
-              {displayedGoldChange >= 0 ? 'trending_up' : 'trending_down'}
+              {prices.gold.change24h >= 0 ? 'trending_up' : 'trending_down'}
             </span>
             <span className="text-sm font-bold">
-              {displayedGoldChange >= 0 ? '+' : ''}{displayedGoldChange}% (24h)
+              {prices.gold.change24h >= 0 ? '+' : ''}{prices.gold.change24h}% (24h)
             </span>
           </div>
           <div className="mt-6 h-12 w-full bg-[#1A1A1A] rounded-xl flex flex-col justify-end overflow-hidden">
@@ -328,7 +350,7 @@ export default function InvestmentPage() {
       </div>
 
       {/* ── Perbandingan Instrumen Investasi ── */}
-      <div>
+      <section id="instrument-comparison">
         <h2 className="text-2xl font-[900] tracking-[-0.03em] text-[#F4F4F0] mb-2">
           Perbandingan Instrumen<span className="text-[#BCFF4F]">.</span>
         </h2>
@@ -369,7 +391,7 @@ export default function InvestmentPage() {
             * Pajak capital gain saham 0.1% dari nilai transaksi jual. Data bersifat umum & dapat berubah.
           </p>
         </div>
-      </div>
+      </section>
 
       {/* ── Rumus Investasi ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -5,6 +5,7 @@ import AppLayout from '@/components/layout/AppLayout';
 import { useSavingsGoals, useCreateGoal, useDeposit, useDeleteGoal } from '@/hooks/useSavings';
 import { formatIDR } from '@/lib/formatters';
 import { Skeleton } from '@/components/ui/skeleton';
+import SearchableSection from '@/components/common/SearchableSection';
 import { toast } from 'sonner';
 
 export default function SavingsPage() {
@@ -131,8 +132,13 @@ export default function SavingsPage() {
       </section>
 
       {/* Goal Cards Grid */}
-      {goals && goals.length > 0 ? (
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mb-16">
+      <SearchableSection
+        id="savings-goals"
+        title="Target Tabungan"
+        subtitle="Kelola semua goal tabunganmu di sini"
+      >
+        {goals && goals.length > 0 ? (
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mb-16">
           {goals.map((goal, index) => {
             const circumference = 2 * Math.PI * 40;
             const strokeOffset = circumference - (goal.percentage / 100) * circumference;
@@ -238,9 +244,14 @@ export default function SavingsPage() {
           </button>
         </section>
       )}
+      </SearchableSection>
 
-      {/* AI Saving Tips (Static Placeholder) */}
-      <section className="mb-20">
+      {/* Progres Menabung Section */}
+      <SearchableSection
+        id="savings-progress"
+        title="Progres Menabung"
+        subtitle="Tips dan insights untuk membantumu mencapai target"
+      >
         <div className="bg-[#141414] rounded-[2rem] p-12 relative overflow-hidden border border-[#BCFF4F]/15">
           <div className="flex items-center gap-4 mb-10">
             <div className="w-12 h-12 bg-[#BCFF4F] rounded-full flex items-center justify-center">
@@ -270,7 +281,7 @@ export default function SavingsPage() {
           </div>
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#BCFF4F]/5 rounded-full blur-[100px]" />
         </div>
-      </section>
+      </SearchableSection>
 
       {/* Add Goal Modal */}
       {showAddModal && (

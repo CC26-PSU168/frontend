@@ -83,6 +83,7 @@ export default function Sidebar() {
           <span className="font-bold text-sm uppercase tracking-tighter">Settings</span>
         </Link>
         <button
+          suppressHydrationWarning
           className="text-[#888888] px-6 py-4 flex items-center gap-4 hover:text-[#F4F4F0] transition-colors w-full"
           onClick={() => {
             localStorage.removeItem('accessToken');
