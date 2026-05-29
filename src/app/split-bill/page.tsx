@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
+import SearchableSection from '@/components/common/SearchableSection';
 import {
   useSplitBills,
   useCreateSplitBill,
@@ -62,8 +63,8 @@ export default function SplitBillPage() {
   const [participants, setParticipants] = useState<{ name: string }[]>([]);
   const [newParticipantName, setNewParticipantName] = useState('');
 
-  // Assignments: itemIndex → participantIndices[]
-  const [assignments, setAssignments] = useState<Record<number, number[]>>({});
+  // Appointments: itemIndex → participantIndex → qty
+  const [assignments, setAssignments] = useState<Record<number, Record<number, number>>>({});
 
   // Split mode
   const [splitMethod, setSplitMethod] = useState<'equal' | 'item'>('equal');
@@ -80,31 +81,58 @@ export default function SplitBillPage() {
     }
     let share = 0;
     items.forEach((item, iIndex) => {
-      const assigned = assignments[iIndex] ?? [];
-      if (assigned.includes(pIndex) && assigned.length > 0) {
-        share += Math.round(item.subtotal / assigned.length);
+      const assignedQty = assignments[iIndex]?.[pIndex] ?? 0;
+      if (assignedQty > 0) {
+        share += item.unitPrice * assignedQty;
       }
     });
-    return share;
+    return Math.round(share);
   }
 
   // ── Assignment helpers ────────────────────────────────────────────────────
 
-  function toggleAssignment(itemIndex: number, pIndex: number) {
+  function updateAssignmentQty(itemIndex: number, pIndex: number, delta: number) {
     setAssignments((prev) => {
-      const current = prev[itemIndex] ?? [];
-      const next = current.includes(pIndex)
-        ? current.filter((id) => id !== pIndex)
-        : [...current, pIndex];
-      return { ...prev, [itemIndex]: next };
+      const currentMap = prev[itemIndex] || {};
+      const currentQty = currentMap[pIndex] || 0;
+      const newQty = Math.max(0, currentQty + delta);
+      
+      const nextMap = { ...currentMap, [pIndex]: newQty };
+      // Hapus key kalau qty 0 supaya bersih
+      if (newQty === 0) {
+        delete nextMap[pIndex];
+      }
+
+      return {
+        ...prev,
+        [itemIndex]: nextMap,
+      };
     });
   }
 
   function assignAll(itemIndex: number) {
-    setAssignments((prev) => ({
-      ...prev,
-      [itemIndex]: participants.map((_, i) => i),
-    }));
+    // assignAll di mode qty mungkin tidak terlalu relevan, tapi kita bisa bagi rata sisa qty
+    const item = items[itemIndex];
+    if (!item) return;
+    
+    setAssignments((prev) => {
+      const currentMap = prev[itemIndex] || {};
+      const assignedTotal = Object.values(currentMap).reduce((a, b) => a + b, 0);
+      let remaining = item.qty - assignedTotal;
+      
+      if (remaining <= 0) return prev; // sudah habis
+      
+      const nextMap = { ...currentMap };
+      // Bagi sisa satu per satu
+      let pIdx = 0;
+      while (remaining > 0 && participants.length > 0) {
+        nextMap[pIdx] = (nextMap[pIdx] || 0) + 1;
+        remaining--;
+        pIdx = (pIdx + 1) % participants.length;
+      }
+      
+      return { ...prev, [itemIndex]: nextMap };
+    });
   }
 
   // ── Item CRUD ─────────────────────────────────────────────────────────────
@@ -125,7 +153,7 @@ export default function SplitBillPage() {
   function removeItem(index: number) {
     setItems((prev) => prev.filter((_, i) => i !== index));
     setAssignments((prev) => {
-      const next: Record<number, number[]> = {};
+      const next: Record<number, Record<number, number>> = {};
       Object.entries(prev).forEach(([key, val]) => {
         const k = parseInt(key);
         if (k !== index) next[k > index ? k - 1 : k] = val;
@@ -145,11 +173,16 @@ export default function SplitBillPage() {
   function removeParticipant(index: number) {
     setParticipants((prev) => prev.filter((_, i) => i !== index));
     setAssignments((prev) => {
-      const next: Record<number, number[]> = {};
+      const next: Record<number, Record<number, number>> = {};
       Object.entries(prev).forEach(([key, val]) => {
-        next[parseInt(key)] = val
-          .filter((pIdx) => pIdx !== index)
-          .map((pIdx) => (pIdx > index ? pIdx - 1 : pIdx));
+        const nextMap: Record<number, number> = {};
+        Object.entries(val).forEach(([pIdxStr, qty]) => {
+          const pIdx = parseInt(pIdxStr);
+          if (pIdx === index) return; // participant dihapus
+          const newIdx = pIdx > index ? pIdx - 1 : pIdx;
+          nextMap[newIdx] = qty;
+        });
+        next[parseInt(key)] = nextMap;
       });
       return next;
     });
@@ -177,7 +210,10 @@ export default function SplitBillPage() {
     items.length > 0 &&
     participants.length > 0 &&
     (splitMethod === 'equal' ||
-      items.every((_, i) => (assignments[i] ?? []).length > 0));
+      items.every((item, i) => {
+        const assignedTotal = Object.values(assignments[i] || {}).reduce((a, b) => a + b, 0);
+        return assignedTotal === item.qty; // Harus habis terbagi
+      }));
 
   // ── Submit ────────────────────────────────────────────────────────────────
 
@@ -186,9 +222,12 @@ export default function SplitBillPage() {
 
     const assignmentsPayload =
       splitMethod === 'item'
-        ? Object.entries(assignments).map(([itemIndex, participantIndices]) => ({
+        ? Object.entries(assignments).map(([itemIndex, participantMap]) => ({
             itemIndex: parseInt(itemIndex),
-            participantIndices,
+            assignees: Object.entries(participantMap).map(([pIdx, qty]) => ({
+              participantIndex: parseInt(pIdx),
+              qty,
+            })),
           }))
         : undefined;
 
@@ -343,8 +382,13 @@ export default function SplitBillPage() {
       </div>
 
       {/* Bill Cards */}
-      {bills && bills.length > 0 ? (
-        <div className="grid grid-cols-1 gap-6 max-w-5xl">
+      <SearchableSection
+        id="bill-list"
+        title={activeTab === 'pending' ? 'Tagihan Aktif' : 'Riwayat Tagihan'}
+        subtitle={activeTab === 'pending' ? 'Daftar semua tagihan yang belum diselesaikan' : 'Daftar tagihan yang sudah diselesaikan'}
+      >
+        {bills && bills.length > 0 ? (
+          <div className="grid grid-cols-1 gap-6 max-w-5xl">
           {bills.map((bill, index) => {
             const isFirst = index === 0 && activeTab === 'pending';
             return (
@@ -522,6 +566,7 @@ export default function SplitBillPage() {
           )}
         </div>
       )}
+      </SearchableSection>
 
       {/* ── Create Modal ───────────────────────────────────────────────────── */}
 
@@ -667,44 +712,74 @@ export default function SplitBillPage() {
                         {/* Assignment per item — hanya tampil di mode Per Item DAN ada participant */}
                         {splitMethod === 'item' && participants.length > 0 && (
                           <div className="mt-3 pt-3 border-t border-white/5">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-[#888888] text-[10px] uppercase tracking-widest font-black">
-                                Untuk:
-                              </span>
-                              {participants.map((p, pIndex) => {
-                                const assigned = (
-                                  assignments[iIndex] ?? []
-                                ).includes(pIndex);
-                                return (
-                                  <button
-                                    key={pIndex}
-                                    onClick={() => toggleAssignment(iIndex, pIndex)}
-                                    className={`px-2 py-1 rounded-full text-[10px] font-black uppercase transition-all ${
-                                      assigned
-                                        ? 'bg-[#BCFF4F] text-black'
-                                        : 'bg-white/5 text-[#888888] border border-white/10 hover:bg-white/10'
-                                    }`}
-                                  >
-                                    {p.name}
-                                  </button>
-                                );
-                              })}
-                              <button
-                                onClick={() => assignAll(iIndex)}
-                                className="px-2 py-1 rounded-full text-[10px] font-black uppercase bg-white/5 text-[#888888] border border-white/10 hover:bg-white/10 transition-all"
-                              >
-                                Semua
-                              </button>
-                            </div>
+                            {(() => {
+                              const assignedMap = assignments[iIndex] || {};
+                              const assignedTotal = Object.values(assignedMap).reduce((a, b) => a + b, 0);
+                              const remaining = item.qty - assignedTotal;
+                              return (
+                                <>
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="text-[#888888] text-[10px] uppercase tracking-widest font-black">
+                                      Atur Pembagian Qty
+                                    </span>
+                                    <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full ${remaining === 0 ? 'bg-[#BCFF4F]/20 text-[#BCFF4F]' : remaining < 0 ? 'bg-red-500/20 text-red-500' : 'bg-[#BCFF4F] text-black'}`}>
+                                      Sisa Qty: {remaining}
+                                    </span>
+                                  </div>
+                                  <div className="flex flex-col gap-2">
+                                    {participants.map((p, pIndex) => {
+                                      const assignedQty = assignedMap[pIndex] || 0;
+                                      return (
+                                        <div key={pIndex} className={`flex justify-between items-center rounded-lg px-3 py-2 border transition-colors ${assignedQty > 0 ? 'bg-[#BCFF4F]/10 border-[#BCFF4F]/20' : 'bg-black/20 border-white/5 hover:border-white/10'}`}>
+                                          <div className="flex flex-col">
+                                            <span className={`text-xs font-bold ${assignedQty > 0 ? 'text-white' : 'text-[#888888]'}`}>{p.name}</span>
+                                            {assignedQty > 0 && (
+                                              <span className="text-[#BCFF4F] text-[10px] font-black uppercase tracking-wider">
+                                                {assignedQty} x {formatIDR(item.unitPrice)} = {formatIDR(assignedQty * item.unitPrice)}
+                                              </span>
+                                            )}
+                                          </div>
+                                          <div className="flex items-center gap-3">
+                                            <button
+                                              onClick={() => updateAssignmentQty(iIndex, pIndex, -1)}
+                                              disabled={assignedQty === 0}
+                                              className="w-7 h-7 rounded-full flex items-center justify-center bg-white/5 text-white disabled:opacity-30 hover:bg-white/20 transition-all font-black"
+                                            >
+                                              -
+                                            </button>
+                                            <span className="text-sm font-black w-4 text-center text-white">{assignedQty}</span>
+                                            <button
+                                              onClick={() => updateAssignmentQty(iIndex, pIndex, 1)}
+                                              disabled={remaining <= 0}
+                                              className="w-7 h-7 rounded-full flex items-center justify-center bg-white/5 text-white disabled:opacity-30 hover:bg-[#BCFF4F] hover:text-black transition-all font-black"
+                                            >
+                                              +
+                                            </button>
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                    {remaining > 0 && (
+                                      <button
+                                        onClick={() => assignAll(iIndex)}
+                                        className="mt-1 w-full px-2 py-2 rounded-lg text-[10px] font-black uppercase bg-white/5 text-[#888888] border border-white/10 hover:bg-white/10 transition-all"
+                                      >
+                                        Bagi Sisa Secara Rata
+                                      </button>
+                                    )}
+                                  </div>
+                                </>
+                              );
+                            })()}
                           </div>
                         )}
 
-                        {/* Warning kalau item belum di-assign */}
+                        {/* Warning kalau item belum terbagi habis */}
                         {splitMethod === 'item' &&
                           participants.length > 0 &&
-                          (assignments[iIndex] ?? []).length === 0 && (
+                          Object.values(assignments[iIndex] || {}).reduce((a, b) => a + b, 0) !== item.qty && (
                             <p className="text-yellow-500 text-[10px] font-bold mt-2">
-                              ⚠ Belum di-assign ke siapapun
+                              ⚠ Qty belum habis atau berlebih
                             </p>
                           )}
                       </div>

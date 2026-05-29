@@ -31,7 +31,10 @@ export function useCreateSplitBill() {
       participants: { name: string }[];
       assignments?: {
         itemIndex: number;
-        participantIndices: number[];
+        assignees: {
+          participantIndex: number;
+          qty: number;
+        }[];
       }[];
     }) => {
       const res = await api.post('/split-bill', data);
