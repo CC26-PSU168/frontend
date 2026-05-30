@@ -1,47 +1,1 @@
-﻿"use client";
-
-import Link from 'next/link';
-import LogoImage from '@/components/common/LogoImage';
-
-type LandingNavbarProps = {
-  activeSection?: string;
-};
-
-export default function LandingNavbar({ activeSection }: LandingNavbarProps) {
-  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  return (
-    <header className="fixed top-0 w-full z-50 bg-transparent backdrop-blur-xl bg-black/70">
-      <nav className="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
-        <div 
-          onClick={scrollToTop}
-          className="flex items-center gap-4 transition-all duration-300 hover:scale-[1.03] active:scale-95 hover:drop-shadow-[0_0_12px_rgba(188,255,79,0.5)] cursor-pointer"
-        >
-          <LogoImage className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover" />
-          <span className="text-3xl md:text-4xl font-[900] tracking-tighter text-[#F4F4F0]">
-            Budgetly.
-          </span>
-        </div>
-        <div className="hidden md:flex gap-8 items-center">
-          <a onClick={(e) => handleScroll(e, 'features')} className={`cursor-pointer transition-colors duration-300 uppercase text-xs tracking-widest ${activeSection === 'fitur' || activeSection === 'features' ? 'text-[#BCFF4F] font-bold border-b-2 border-[#BCFF4F] pb-1' : 'text-[#888888] font-medium hover:text-[#BCFF4F]'}`}>Fitur</a>
-          <a onClick={(e) => handleScroll(e, 'edukasi')} className={`cursor-pointer transition-colors duration-300 uppercase text-xs tracking-widest ${activeSection === 'edukasi' ? 'text-[#BCFF4F] font-bold border-b-2 border-[#BCFF4F] pb-1' : 'text-[#888888] font-medium hover:text-[#BCFF4F]'}`}>Edukasi</a>
-          <a onClick={(e) => handleScroll(e, 'komunitas')} className={`cursor-pointer transition-colors duration-300 uppercase text-xs tracking-widest ${activeSection === 'komunitas' ? 'text-[#BCFF4F] font-bold border-b-2 border-[#BCFF4F] pb-1' : 'text-[#888888] font-medium hover:text-[#BCFF4F]'}`}>Komunitas</a>
-          <a onClick={(e) => handleScroll(e, 'bantuan')} className={`cursor-pointer transition-colors duration-300 uppercase text-xs tracking-widest ${activeSection === 'bantuan' ? 'text-[#BCFF4F] font-bold border-b-2 border-[#BCFF4F] pb-1' : 'text-[#888888] font-medium hover:text-[#BCFF4F]'}`}>Bantuan</a>
-        </div>
-        <Link href="/auth/register" className="bg-[#BCFF4F] text-[#0A0A0A] px-6 py-2 rounded-full font-bold text-sm hover:scale-105 active:scale-95 transition-all shadow-[0_0_15px_rgba(188,255,79,0.3)] uppercase">
-          Mulai Gratis
-        </Link>
-      </nav>
-    </header>
-  );
-}
+믯⊿獵⁥汣敩瑮㬢਍਍浩潰瑲䰠湩⁫牦浯✠敮瑸氯湩❫഻椊灭牯⁴潌潧浉条⁥牦浯✠⽀潣灭湯湥獴振浯潭⽮潌潧浉条❥഻ഊ琊灹⁥慌摮湩乧癡慢偲潲獰㴠笠਍†捡楴敶敓瑣潩㽮›瑳楲杮഻紊഻ഊ攊灸牯⁴敤慦汵⁴畦据楴湯䰠湡楤杮慎扶牡笨愠瑣癩卥捥楴湯素›慌摮湩乧癡慢偲潲獰 ൻ 挠湯瑳栠湡汤卥牣汯⁬‽攨›敒捡⹴潍獵䕥敶瑮䠼䵔䅌据潨䕲敬敭瑮ⰾ椠㩤猠牴湩⥧㴠‾ൻ †攠瀮敲敶瑮敄慦汵⡴㬩਍††潣獮⁴汥浥湥⁴‽潤畣敭瑮朮瑥汅浥湥䉴䥹⡤摩㬩਍††晩⠠汥浥湥⥴笠਍†††汥浥湥⹴捳潲汬湉潴楖睥笨戠桥癡潩㩲✠浳潯桴Ⱗ戠潬正›猧慴瑲‧⥽഻ †素਍†㭽਍਍†潣獮⁴捳潲汬潔潔⁰‽⤨㴠‾ൻ †眠湩潤⹷捳潲汬潔笨琠灯›ⰰ戠桥癡潩㩲✠浳潯桴‧⥽഻ 素഻ഊ 爠瑥牵⁮ന †㰠敨摡牥挠慬獳慎敭∽楦數⁤潴⵰‰⵷畦汬稠㔭‰杢琭慲獮慰敲瑮戠捡摫潲⵰汢牵砭⁬杢戭慬正㜯∰ാ ††㰠慮⁶汣獡乳浡㵥昢敬⁸番瑳晩⵹敢睴敥⁮瑩浥⵳散瑮牥瀠⵸‸祰㐭洠硡眭㜭汸洠⵸畡潴㸢਍††††搼癩ഠ ††††漠䍮楬正笽捳潲汬潔潔絰਍†††††汣獡乳浡㵥昢敬⁸瑩浥⵳散瑮牥朠灡㐭琠慲獮瑩潩⵮污⁬畤慲楴湯㌭〰栠癯牥猺慣敬嬭⸱㌰⁝捡楴敶猺慣敬㤭‵潨敶㩲牤灯猭慨潤⵷せたㅟ瀲彸杲慢ㄨ㠸㈬㔵㜬ⰹ⸰⤵⁝畣獲牯瀭楯瑮牥ഢ †††㸠਍†††††䰼杯䥯慭敧挠慬獳慎敭∽⵷〱栠ㄭ‰摭眺ㄭ′摭栺ㄭ′潲湵敤ⵤ畦汬漠橢捥⵴潣敶≲⼠ാ ††††㰠灳湡挠慬獳慎敭∽整瑸㌭汸洠㩤整瑸㐭汸映湯⵴㥛〰⁝牴捡楫杮琭杩瑨牥琠硥⵴⍛㑆㑆う≝ാ †††††䈠摵敧汴⹹਍†††††⼼灳湡ാ †††㰠搯癩ാ †††㰠楤⁶汣獡乳浡㵥栢摩敤⁮摭昺敬⁸慧⵰‸瑩浥⵳散瑮牥㸢਍†††††愼漠䍮楬正笽攨 㸽栠湡汤卥牣汯⡬ⱥ✠敦瑡牵獥⤧⁽汣獡乳浡㵥恻畣獲牯瀭楯瑮牥琠慲獮瑩潩⵮潣潬獲搠牵瑡潩⵮〳‰灵数捲獡⁥整瑸砭⁳牴捡楫杮眭摩獥⁴笤捡楴敶敓瑣潩⁮㴽‽昧瑩牵‧籼愠瑣癩卥捥楴湯㴠㴽✠敦瑡牵獥‧‿琧硥⵴⍛䍂䙆䘴⁝潦瑮戭汯⁤潢摲牥戭㈭戠牯敤⵲⍛䍂䙆䘴⁝扰ㄭ‧›琧硥⵴⍛㠸㠸㠸⁝潦瑮洭摥畩⁭潨敶㩲整瑸嬭䈣䙃㑆嵆紧絠䘾瑩牵⼼㹡਍†††††愼漠䍮楬正笽攨 㸽栠湡汤卥牣汯⡬ⱥ✠摥歵獡❩紩挠慬獳慎敭笽捠牵潳⵲潰湩整⁲牴湡楳楴湯挭汯牯⁳畤慲楴湯㌭〰甠灰牥慣敳琠硥⵴獸琠慲正湩ⵧ楷敤瑳␠慻瑣癩卥捥楴湯㴠㴽✠摥歵獡❩㼠✠整瑸嬭䈣䙃㑆嵆映湯⵴潢摬戠牯敤⵲ⵢ′潢摲牥嬭䈣䙃㑆嵆瀠ⵢ✱㨠✠整瑸嬭㠣㠸㠸崸映湯⵴敭楤浵栠癯牥琺硥⵴⍛䍂䙆䘴❝恽㹽摅歵獡㱩愯ാ ††††㰠⁡湯汃捩㵫⡻⥥㴠‾慨摮敬捓潲汬攨‬欧浯湵瑩獡⤧⁽汣獡乳浡㵥恻畣獲牯瀭楯瑮牥琠慲獮瑩潩⵮潣潬獲搠牵瑡潩⵮〳‰灵数捲獡⁥整瑸砭⁳牴捡楫杮眭摩獥⁴笤捡楴敶敓瑣潩⁮㴽‽欧浯湵瑩獡‧‿琧硥⵴⍛䍂䙆䘴⁝潦瑮戭汯⁤潢摲牥戭㈭戠牯敤⵲⍛䍂䙆䘴⁝扰ㄭ‧›琧硥⵴⍛㠸㠸㠸⁝潦瑮洭摥畩⁭潨敶㩲整瑸嬭䈣䙃㑆嵆紧絠䬾浯湵瑩獡⼼㹡਍†††††愼漠䍮楬正笽攨 㸽栠湡汤卥牣汯⡬ⱥ✠慢瑮慵❮紩挠慬獳慎敭笽捠牵潳⵲潰湩整⁲牴湡楳楴湯挭汯牯⁳畤慲楴湯㌭〰甠灰牥慣敳琠硥⵴獸琠慲正湩ⵧ楷敤瑳␠慻瑣癩卥捥楴湯㴠㴽✠慢瑮慵❮㼠✠整瑸嬭䈣䙃㑆嵆映湯⵴潢摬戠牯敤⵲ⵢ′潢摲牥嬭䈣䙃㑆嵆瀠ⵢ✱㨠✠整瑸嬭㠣㠸㠸崸映湯⵴敭楤浵栠癯牥琺硥⵴⍛䍂䙆䘴❝恽㹽慂瑮慵㱮愯ാ †††㰠搯癩ാ †††㰠楌歮栠敲㵦⼢畡桴爯来獩整≲挠慬獳慎敭∽杢嬭䈣䙃㑆嵆琠硥⵴⍛䄰䄰䄰⁝硰㘭瀠⵹′潲湵敤ⵤ畦汬映湯⵴潢摬琠硥⵴浳栠癯牥猺慣敬ㄭ㔰愠瑣癩㩥捳污ⵥ㔹琠慲獮瑩潩⵮污⁬桳摡睯嬭弰弰㔱硰牟执⡡㠱ⰸ㔲ⰵ㤷〬㌮崩甠灰牥慣敳㸢਍†††††畍慬⁩片瑡獩਍††††⼼楌歮ാ ††㰠港癡ാ †㰠栯慥敤㹲਍†㬩਍ൽ
